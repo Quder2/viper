@@ -431,12 +431,6 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
     child: Text('VIPER // $_code', style: const TextStyle(color: Color(0xFFB8FF9B),
       fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.2)));
 
-  Widget _playButton(bool playing) => Container(
-    decoration: BoxDecoration(shape: BoxShape.circle, color: const Color(0xFF9BFF83).withValues(alpha: .18),
-      border: Border.all(color: const Color(0xFFB8FF9B), width: 1.5),
-      boxShadow: const [BoxShadow(color: Color(0x9900E676), blurRadius: 24, spreadRadius: 2)]),
-    child: IconButton(onPressed: _playPause, iconSize: 42, color: const Color(0xFFB8FF9B),
-      icon: Icon(playing ? Icons.pause_rounded : Icons.play_arrow_rounded)));
 }
 
 class _ToxicGlow extends CustomPainter {
