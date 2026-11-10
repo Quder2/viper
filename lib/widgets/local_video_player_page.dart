@@ -48,6 +48,16 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
 
   void _videoChanged() { if (mounted && !_seeking) setState(() {}); }
 
+  Future<void> _seekBy(Duration offset) async {
+    final c = _controller;
+    if (c == null) return;
+    final target = c.value.position + offset;
+    final boundedMs = target.inMilliseconds
+        .clamp(0, c.value.duration.inMilliseconds)
+        .toInt();
+    await c.seekTo(Duration(milliseconds: boundedMs));
+  }
+
   Future<void> _playPause() async {
     final c = _controller;
     if (c == null) return;
@@ -239,9 +249,9 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
             ]),
             const SizedBox(height: 4),
             Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-              _portraitAction(Icons.replay_5_rounded, '−5 сек', () => c.seekTo(v.position - const Duration(seconds: 5))),
+              _portraitAction(Icons.replay_5_rounded, '−5 сек', () => _seekBy(const Duration(seconds: -5))),
               _playButton(v.isPlaying),
-              _portraitAction(Icons.forward_5_rounded, '+5 сек', () => c.seekTo(v.position + const Duration(seconds: 5))),
+              _portraitAction(Icons.forward_5_rounded, '+5 сек', () => _seekBy(const Duration(seconds: 5))),
             ]),
             const SizedBox(height: 16),
             Container(
