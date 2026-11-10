@@ -5,6 +5,7 @@ import 'package:viper/features/viper/toxic_lab/toxic_lab_page.dart';
 import 'package:viper/theme/viper_theme.dart';
 import 'package:viper/widgets/local_video_player_page.dart';
 import 'package:viper/widgets/toxic_particles.dart';
+import 'package:viper/widgets/video_asset_thumbnail.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,8 +14,12 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  late final AnimationController _heroMotion = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 18),
+  )..repeat(reverse: true);
 
   static const _abilities = <_AbilityData>[
     _AbilityData(
@@ -55,6 +60,12 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _heroMotion;
+  }
+
   Future<void> _playSound(String asset) async {
     await _audioPlayer.stop();
     await _audioPlayer.play(AssetSource(asset));
@@ -85,6 +96,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _heroMotion.dispose();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -214,7 +226,53 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/images/1.png', fit: BoxFit.cover),
+          AnimatedBuilder(
+            animation: _heroMotion,
+            builder: (context, child) {
+              final progress = _heroMotion.value;
+              return ClipRect(
+                child: Transform.translate(
+                  offset: Offset(-9 + progress * 18, 0),
+                  child: Transform.scale(
+                    scale: 1.045 + progress * .045,
+                    child: child,
+                  ),
+                ),
+              );
+            },
+            child: Image.asset(
+              'assets/images/1.png',
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+            ),
+          ),
+          IgnorePointer(
+            child: AnimatedBuilder(
+              animation: _heroMotion,
+              builder: (context, child) => DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment(
+                      -.55 + _heroMotion.value * 1.1,
+                      -.35,
+                    ),
+                    radius: 1.15,
+                    colors: [
+                      const Color(0xFF9BFF83).withValues(
+                        alpha: .035 + _heroMotion.value * .035,
+                      ),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: child,
+              ),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          const IgnorePointer(
+            child: ToxicParticles(particleCount: 26, opacity: .24),
+          ),
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -555,6 +613,15 @@ class _AbilityPanel extends StatelessWidget {
       );
 }
 
+
+int _previewTimeForAbility(String code) => switch (code) {
+      'C' => 2200,
+      'Q' => 2600,
+      'E' => 2400,
+      'ULT' => 3200,
+      _ => 1800,
+    };
+
 class _VideoArchiveCard extends StatelessWidget {
   const _VideoArchiveCard({required this.ability, required this.onTap});
   final _AbilityData ability;
@@ -572,7 +639,11 @@ class _VideoArchiveCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(ability.preview, fit: BoxFit.cover),
+                VideoAssetThumbnail(
+                  videoAsset: ability.video,
+                  fallbackAsset: ability.preview,
+                  timeMs: _previewTimeForAbility(ability.code),
+                ),
                 const DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
