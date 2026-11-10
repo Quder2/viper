@@ -477,20 +477,26 @@ class _HomePageState extends State<HomePage> {
                                 makeVideoWidget(
                                   context: context,
                                   title: 'Змеиный укус',
-                                  imagePath: 'assets/images/2.png',
-                                  videoPath: 'assets/videos/viper_ability_1.mp4',
+                                  imagePath: 'assets/abilities/C.png',
+                                  videoPath: 'assets/videos/viper_ability_C.mp4',
                                 ),
                                 makeVideoWidget(
                                   context: context,
                                   title: 'Ядовитое облако',
-                                  imagePath: 'assets/images/3.png',
-                                  videoPath: 'assets/videos/viper_ability_2.mp4',
+                                  imagePath: 'assets/abilities/Q.png',
+                                  videoPath: 'assets/videos/viper_ability_Q.mp4',
                                 ),
                                 makeVideoWidget(
                                   context: context,
                                   title: 'Токсичная завеса',
-                                  imagePath: 'assets/images/4.png',
-                                  videoPath: 'assets/videos/viper_ability_3.mp4',
+                                  imagePath: 'assets/abilities/E.png',
+                                  videoPath: 'assets/videos/viper_ability_E.mp4',
+                                ),
+                                makeVideoWidget(
+                                  context: context,
+                                  title: 'Гнездо гадюки',
+                                  imagePath: 'assets/abilities/X.png',
+                                  videoPath: 'assets/videos/viper_ability_ult.mp4',
                                 )
                               ],
                             ),
