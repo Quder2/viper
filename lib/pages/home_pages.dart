@@ -2,23 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:viper/pages/full_story_page.dart';
 import 'package:viper/play_animation_widget.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Music Player',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomePage(),
-    );
-  }
-}
+import 'package:viper/widgets/local_video_player_page.dart';
+import 'package:viper/widgets/toxic_particles.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -54,6 +39,9 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
+          const Positioned.fill(
+            child: IgnorePointer(child: ToxicParticles()),
+          ),
           CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -485,12 +473,24 @@ class _HomePageState extends State<HomePage> {
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               children: [
-                                makeVideoWodget(
-                                    imagePath: 'assets/images/2.png'),
-                                makeVideoWodget(
-                                    imagePath: 'assets/images/3.png'),
-                                makeVideoWodget(
-                                    imagePath: 'assets/images/4.png')
+                                makeVideoWidget(
+                                  context: context,
+                                  title: 'Змеиный укус',
+                                  imagePath: 'assets/images/2.png',
+                                  videoPath: 'assets/videos/viper_ability_1.mp4',
+                                ),
+                                makeVideoWidget(
+                                  context: context,
+                                  title: 'Ядовитое облако',
+                                  imagePath: 'assets/images/3.png',
+                                  videoPath: 'assets/videos/viper_ability_2.mp4',
+                                ),
+                                makeVideoWidget(
+                                  context: context,
+                                  title: 'Токсичная завеса',
+                                  imagePath: 'assets/images/4.png',
+                                  videoPath: 'assets/videos/viper_ability_3.mp4',
+                                )
                               ],
                             ),
                           ),
@@ -536,32 +536,69 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-Widget makeVideoWodget({imagePath}) {
+Widget makeVideoWidget({
+  required BuildContext context,
+  required String title,
+  required String imagePath,
+  required String videoPath,
+}) {
   return AspectRatio(
-    aspectRatio: 1.5 / 1,
-    child: Container(
-      margin: const EdgeInsets.only(right: 20),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
-            image: AssetImage(imagePath),
-            fit: BoxFit.cover,
-          )),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomRight,
-            colors: [
-              Colors.black.withOpacity(.9),
-              Colors.black.withOpacity(.3),
+    aspectRatio: 1.5,
+    child: Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Material(
+        color: ViperTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => LocalVideoPlayerPage(
+                  title: title,
+                  assetPath: videoPath,
+                ),
+              ),
+            );
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(imagePath, fit: BoxFit.cover),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.88),
+                      Colors.black.withValues(alpha: 0.08),
+                    ],
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Text(
+                    title.toUpperCase(),
+                    style: const TextStyle(
+                      color: Color(0xFF9BFF83),
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                ),
+              ),
+              const Center(
+                child: Icon(
+                  Icons.play_circle_fill_rounded,
+                  color: Color(0xFF9BFF83),
+                  size: 64,
+                ),
+              ),
             ],
-          ),
-        ),
-        child: const Align(
-          child: Icon(
-            Icons.play_circle,
-            color: Color.fromARGB(178, 24, 102, 5),
-            size: 70,
           ),
         ),
       ),
