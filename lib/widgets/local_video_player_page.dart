@@ -123,7 +123,7 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
   Widget build(BuildContext context) {
     return PopScope(
       canPop: !_fullscreen,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop && _fullscreen) {
           _fullscreenToggle();
         }
@@ -320,11 +320,11 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
                   ])),
                 const Spacer(),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  _bigSeek(Icons.replay_5_rounded, '−5', () => c.seekTo(v.position - const Duration(seconds: 5))),
+                  _bigSeek(Icons.replay_5_rounded, '−5', () => _seekBy(const Duration(seconds: -5))),
                   const SizedBox(width: 26),
                   _playButton(v.isPlaying, large: true),
                   const SizedBox(width: 26),
-                  _bigSeek(Icons.forward_5_rounded, '+5', () => c.seekTo(v.position + const Duration(seconds: 5))),
+                  _bigSeek(Icons.forward_5_rounded, '+5', () => _seekBy(const Duration(seconds: 5))),
                 ]),
                 const Spacer(),
                 Padding(padding: const EdgeInsets.fromLTRB(26, 0, 26, 14),
