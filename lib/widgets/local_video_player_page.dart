@@ -111,97 +111,318 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
 
   @override
   Widget build(BuildContext context) {
-    final c = _controller;
-    final v = c?.value;
-    final duration = v?.duration ?? Duration.zero;
-    final position = v?.position ?? Duration.zero;
-    final maxMs = math.max(1, duration.inMilliseconds).toDouble();
-    return Scaffold(
-      backgroundColor: const Color(0xFF030A06),
-      appBar: _fullscreen ? null : AppBar(
-        backgroundColor: const Color(0xFF07150D),
-        title: Text(widget.title),
-        actions: [_badge(), const SizedBox(width: 14)],
+    return WillPopScope(
+      onWillPop: () async {
+        if (_fullscreen) {
+          await _fullscreenToggle();
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF030A06),
+        appBar: _fullscreen ? null : AppBar(
+          backgroundColor: const Color(0xFF07150D),
+          title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w800)),
+            const Text('TACTICAL VIDEO ARCHIVE',
+              style: TextStyle(fontSize: 8, letterSpacing: 1.8, color: Color(0xFF8DBA91))),
+          ]),
+          actions: [_badge(), const SizedBox(width: 14)],
+        ),
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 380),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: .98, end: 1).animate(animation),
+              child: child,
+            ),
+          ),
+          child: _loading
+            ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator(color: Color(0xFF9BFF83)))
+            : _error != null || _controller == null
+              ? Center(key: const ValueKey('error'), child: _VideoMissingMessage(assetPath: widget.assetPath))
+              : _fullscreen
+                ? _buildFullscreen(_controller!, _controller!.value, key: const ValueKey('fullscreen'))
+                : _buildPortrait(_controller!, _controller!.value, key: const ValueKey('portrait')),
+        ),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF9BFF83)))
-          : _error != null || c == null
-              ? Center(child: _VideoMissingMessage(assetPath: widget.assetPath))
-              : GestureDetector(
-                  onTap: () => setState(() => _controls = !_controls),
-                  child: Stack(fit: StackFit.expand, children: [
-                    const DecoratedBox(decoration: BoxDecoration(
-                      gradient: RadialGradient(center: Alignment(0, -0.3), radius: 1.2,
-                        colors: [Color(0xFF12351D), Color(0xFF030A06)]))),
-                    Positioned.fill(child: IgnorePointer(child: AnimatedBuilder(
-                      animation: _glow,
-                      builder: (_, __) => CustomPaint(painter: _ToxicGlow(_glow.value))))),
-                    Center(child: AspectRatio(
-                      aspectRatio: v!.aspectRatio,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: const BoxDecoration(boxShadow: [
-                          BoxShadow(color: Color(0x6600E676), blurRadius: 32, spreadRadius: 2)]),
-                        child: ClipRRect(borderRadius: BorderRadius.circular(18), child: VideoPlayer(c)),
-                      ))),
-                    if (_controls) Positioned.fill(child: DecoratedBox(
-                      decoration: BoxDecoration(gradient: LinearGradient(
-                        begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                        colors: [Colors.black.withValues(alpha: .5), Colors.transparent, Colors.black.withValues(alpha: .8)],
-                        stops: const [0, .45, 1])),
-                      child: SafeArea(child: Column(children: [
-                        if (_fullscreen) Align(alignment: Alignment.topRight,
-                          child: IconButton(onPressed: _fullscreenToggle, icon: const Icon(Icons.fullscreen_exit), color: Colors.white)),
-                        const Spacer(),
-                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          IconButton(onPressed: () => c.seekTo(position - const Duration(seconds: 5)),
-                            icon: const Icon(Icons.replay_5_rounded), color: Colors.white, iconSize: 34),
-                          const SizedBox(width: 20),
-                          _playButton(v.isPlaying),
-                          const SizedBox(width: 20),
-                          IconButton(onPressed: () => c.seekTo(position + const Duration(seconds: 5)),
-                            icon: const Icon(Icons.forward_5_rounded), color: Colors.white, iconSize: 34),
-                        ]),
-                        const Spacer(),
-                        Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 12), child: Column(children: [
-                          Row(children: [
-                            Text(_time(_seeking ? Duration(milliseconds: _seekMs.round()) : position),
-                              style: const TextStyle(color: Colors.white, fontSize: 11)),
-                            Expanded(child: Slider(
-                              min: 0, max: maxMs,
-                              value: (_seeking ? _seekMs : position.inMilliseconds.toDouble()).clamp(0, maxMs).toDouble(),
-                              onChangeStart: (x) => setState(() { _seeking = true; _seekMs = x; }),
-                              onChanged: (x) => setState(() => _seekMs = x),
-                              onChangeEnd: (x) async {
-                                await c.seekTo(Duration(milliseconds: x.round()));
-                                if (mounted) setState(() => _seeking = false);
-                              },
-                              activeColor: const Color(0xFF9BFF83), inactiveColor: Colors.white24)),
-                            Text(_time(duration), style: const TextStyle(color: Colors.white, fontSize: 11)),
-                          ]),
-                          Row(children: [
-                            IconButton(tooltip: 'Звук', onPressed: _mute,
-                              icon: Icon(_muted ? Icons.volume_off_rounded : Icons.volume_up_rounded), color: Colors.white),
-                            IconButton(tooltip: 'Повтор', onPressed: _loopToggle,
-                              icon: Icon(Icons.repeat_rounded, color: _loop ? const Color(0xFF9BFF83) : Colors.white)),
-                            const Spacer(),
-                            PopupMenuButton<double>(
-                              tooltip: 'Скорость', initialValue: _speed, onSelected: _speedTo,
-                              color: const Color(0xFF102719),
-                              child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text('\${_speed}x', style: const TextStyle(color: Color(0xFFB8FF9B), fontWeight: FontWeight.bold))),
-                              itemBuilder: (_) => [0.5, 0.75, 1, 1.25, 1.5, 2]
-                                .map((x) => PopupMenuItem(value: x, child: Text('\${x}x'))).toList()),
-                            IconButton(tooltip: 'На весь экран', onPressed: _fullscreenToggle,
-                              icon: const Icon(Icons.fullscreen_rounded), color: Colors.white),
-                          ]),
-                        ])),
-                      ])),
-                    )),
-                  ]),
-                ),
     );
   }
+
+  Widget _buildPortrait(VideoPlayerController c, VideoPlayerValue v, {required Key key}) {
+    final maxMs = math.max(1, v.duration.inMilliseconds).toDouble();
+    return Container(
+      key: key,
+      decoration: const BoxDecoration(gradient: LinearGradient(
+        begin: Alignment.topCenter, end: Alignment.bottomCenter,
+        colors: [Color(0xFF0B2113), Color(0xFF030A06), Color(0xFF030A06)])),
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
+          children: [
+            Row(children: [
+              const Icon(Icons.shield_moon_outlined, color: Color(0xFF9BFF83), size: 18),
+              const SizedBox(width: 8),
+              const Text('VIPER // FIELD RECORDING',
+                style: TextStyle(color: Color(0xFF9BFF83), fontSize: 9, letterSpacing: 1.8, fontWeight: FontWeight.w800)),
+              const Spacer(),
+              _badge(),
+            ]),
+            const SizedBox(height: 16),
+            AnimatedBuilder(
+              animation: _glow,
+              builder: (_, child) => Container(
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
+                  boxShadow: [BoxShadow(
+                    color: const Color(0xFF00E676).withValues(alpha: .08 + _glow.value * .10),
+                    blurRadius: 24 + _glow.value * 12, spreadRadius: 1)]),
+                child: child,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: AspectRatio(
+                  aspectRatio: v.aspectRatio,
+                  child: Stack(fit: StackFit.expand, children: [
+                    VideoPlayer(c),
+                    Positioned(left: 12, top: 12, child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(color: Colors.black.withValues(alpha: .62),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .45))),
+                      child: Text(v.isPlaying ? 'PLAYING' : 'PAUSED',
+                        style: const TextStyle(color: Color(0xFFB8FF9B), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.2)))),
+                    Positioned(right: 10, bottom: 10, child: _cinemaButton(compact: true)),
+                    if (!v.isPlaying) Center(child: _playButton(false)),
+                  ]),
+                ),
+              ),
+            ),
+            const SizedBox(height: 22),
+            Row(children: [
+              Container(width: 4, height: 42, decoration: BoxDecoration(
+                color: const Color(0xFF9BFF83), borderRadius: BorderRadius.circular(8),
+                boxShadow: const [BoxShadow(color: Color(0x8800E676), blurRadius: 12)])),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(widget.title.toUpperCase(), style: const TextStyle(
+                  color: Color(0xFFE2FFD8), fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                const SizedBox(height: 4),
+                const Text('ЛОКАЛЬНОЕ ВИДЕО • ОБУЧАЮЩИЙ МАТЕРИАЛ',
+                  style: TextStyle(color: Color(0xFF77917D), fontSize: 9, letterSpacing: .8)),
+              ])),
+            ]),
+            const SizedBox(height: 18),
+            Row(children: [
+              Text(_time(_seeking ? Duration(milliseconds: _seekMs.round()) : v.position),
+                style: const TextStyle(color: Colors.white70, fontSize: 10)),
+              Expanded(child: SliderTheme(
+                data: SliderTheme.of(context).copyWith(trackHeight: 3,
+                  activeTrackColor: const Color(0xFF9BFF83), inactiveTrackColor: Colors.white12,
+                  thumbColor: const Color(0xFF9BFF83), overlayColor: const Color(0xFF9BFF83).withValues(alpha: .14),
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6)),
+                child: Slider(
+                  min: 0, max: maxMs,
+                  value: (_seeking ? _seekMs : v.position.inMilliseconds.toDouble()).clamp(0, maxMs).toDouble(),
+                  onChangeStart: (x) => setState(() { _seeking = true; _seekMs = x; }),
+                  onChanged: (x) => setState(() => _seekMs = x),
+                  onChangeEnd: (x) async {
+                    await c.seekTo(Duration(milliseconds: x.round()));
+                    if (mounted) setState(() => _seeking = false);
+                  },
+                ),
+              )),
+              Text(_time(v.duration), style: const TextStyle(color: Colors.white70, fontSize: 10)),
+            ]),
+            const SizedBox(height: 4),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              _portraitAction(Icons.replay_5_rounded, '−5 сек', () => c.seekTo(v.position - const Duration(seconds: 5))),
+              _playButton(v.isPlaying),
+              _portraitAction(Icons.forward_5_rounded, '+5 сек', () => c.seekTo(v.position + const Duration(seconds: 5))),
+            ]),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(color: const Color(0xFF0B1710),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .14))),
+              child: Row(children: [
+                IconButton(tooltip: 'Звук', onPressed: _mute,
+                  icon: Icon(_muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                    color: _muted ? Colors.white54 : const Color(0xFF9BFF83))),
+                IconButton(tooltip: 'Повтор', onPressed: _loopToggle,
+                  icon: Icon(Icons.repeat_rounded, color: _loop ? const Color(0xFF9BFF83) : Colors.white54)),
+                const Spacer(),
+                PopupMenuButton<double>(
+                  tooltip: 'Скорость', initialValue: _speed, color: const Color(0xFF102719),
+                  onSelected: _speedTo,
+                  itemBuilder: (_) => [0.5, 0.75, 1, 1.25, 1.5, 2]
+                    .map((x) => PopupMenuItem(value: x, child: Text('$x x'))).toList(),
+                  child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    child: Text(_speed.toString() + 'x',
+                      style: const TextStyle(color: Color(0xFFB8FF9B), fontWeight: FontWeight.bold))),
+                ),
+              ]),
+            ),
+            const SizedBox(height: 18),
+            const Center(child: Text('TOXIC ARCHIVE  /  CLASSIFIED FOOTAGE',
+              style: TextStyle(color: Color(0xFF55745D), fontSize: 8, letterSpacing: 2))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFullscreen(VideoPlayerController c, VideoPlayerValue v, {required Key key}) {
+    final maxMs = math.max(1, v.duration.inMilliseconds).toDouble();
+    return Container(
+      key: key,
+      color: Colors.black,
+      child: Stack(fit: StackFit.expand, children: [
+        const DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(
+          center: Alignment.center, radius: 1.2, colors: [Color(0xFF102719), Colors.black]))),
+        Center(child: AspectRatio(aspectRatio: v.aspectRatio, child: VideoPlayer(c))),
+        Positioned.fill(child: IgnorePointer(child: AnimatedBuilder(
+          animation: _glow, builder: (_, __) => CustomPaint(painter: _ToxicGlow(_glow.value))))),
+        if (_controls)
+          Positioned.fill(child: AnimatedOpacity(
+            opacity: _controls ? 1 : 0, duration: const Duration(milliseconds: 180),
+            child: DecoratedBox(
+              decoration: BoxDecoration(gradient: LinearGradient(
+                begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                colors: [Colors.black.withValues(alpha: .66), Colors.transparent,
+                  Colors.black.withValues(alpha: .78)], stops: const [0, .48, 1])),
+              child: SafeArea(child: Column(children: [
+                Padding(padding: const EdgeInsets.fromLTRB(18, 8, 18, 0),
+                  child: Row(children: [
+                    _cinemaButton(onTap: _fullscreenToggle),
+                    const SizedBox(width: 12),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(widget.title.toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1.2, fontSize: 12)),
+                      const SizedBox(height: 3),
+                      const Text('VIPER TACTICAL ARCHIVE',
+                        style: TextStyle(color: Color(0xFF9BB5A0), fontSize: 8, letterSpacing: 2)),
+                    ])),
+                    _badge(),
+                  ])),
+                const Spacer(),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  _bigSeek(Icons.replay_5_rounded, '−5', () => c.seekTo(v.position - const Duration(seconds: 5))),
+                  const SizedBox(width: 26),
+                  _playButton(v.isPlaying, large: true),
+                  const SizedBox(width: 26),
+                  _bigSeek(Icons.forward_5_rounded, '+5', () => c.seekTo(v.position + const Duration(seconds: 5))),
+                ]),
+                const Spacer(),
+                Padding(padding: const EdgeInsets.fromLTRB(26, 0, 26, 14),
+                  child: Column(children: [
+                    Row(children: [
+                      Text(_time(_seeking ? Duration(milliseconds: _seekMs.round()) : v.position),
+                        style: const TextStyle(color: Colors.white70, fontSize: 10)),
+                      Expanded(child: Slider(
+                        min: 0, max: maxMs,
+                        value: (_seeking ? _seekMs : v.position.inMilliseconds.toDouble()).clamp(0, maxMs).toDouble(),
+                        activeColor: const Color(0xFF9BFF83), inactiveColor: Colors.white24,
+                        onChangeStart: (x) => setState(() { _seeking = true; _seekMs = x; }),
+                        onChanged: (x) => setState(() => _seekMs = x),
+                        onChangeEnd: (x) async {
+                          await c.seekTo(Duration(milliseconds: x.round()));
+                          if (mounted) setState(() => _seeking = false);
+                        },
+                      )),
+                      Text(_time(v.duration), style: const TextStyle(color: Colors.white70, fontSize: 10)),
+                    ]),
+                    Row(children: [
+                      IconButton(tooltip: 'Звук', onPressed: _mute,
+                        icon: Icon(_muted ? Icons.volume_off_rounded : Icons.volume_up_rounded, color: Colors.white)),
+                      IconButton(tooltip: 'Повтор', onPressed: _loopToggle,
+                        icon: Icon(Icons.repeat_rounded, color: _loop ? const Color(0xFF9BFF83) : Colors.white54)),
+                      const Spacer(),
+                      PopupMenuButton<double>(
+                        tooltip: 'Скорость', initialValue: _speed, color: const Color(0xFF102719),
+                        onSelected: _speedTo,
+                        itemBuilder: (_) => [0.5, 0.75, 1, 1.25, 1.5, 2]
+                          .map((x) => PopupMenuItem(value: x, child: Text('$x x'))).toList(),
+                        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(_speed.toString() + 'x',
+                            style: const TextStyle(color: Color(0xFFB8FF9B), fontWeight: FontWeight.bold))),
+                      ),
+                      const SizedBox(width: 8),
+                      _cinemaButton(onTap: _fullscreenToggle),
+                    ]),
+                  ])),
+              ])),
+            ),
+          )),
+        if (!_controls)
+          Positioned.fill(child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => setState(() => _controls = true),
+            child: const SizedBox.expand())),
+      ]),
+    );
+  }
+
+  Widget _cinemaButton({bool compact = false, VoidCallback? onTap}) {
+    return Material(
+      color: const Color(0xFF9BFF83).withValues(alpha: .14),
+      borderRadius: BorderRadius.circular(compact ? 13 : 30),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(compact ? 13 : 30),
+        onTap: onTap ?? _fullscreenToggle,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 13, vertical: compact ? 9 : 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(compact ? 13 : 30),
+            border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .7)),
+            boxShadow: const [BoxShadow(color: Color(0x4400E676), blurRadius: 12)]),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(_fullscreen ? Icons.fullscreen_exit_rounded : Icons.fullscreen_rounded,
+              color: const Color(0xFFB8FF9B), size: compact ? 22 : 20),
+            if (!compact) ...[
+              const SizedBox(width: 7),
+              Text(_fullscreen ? 'Свернуть' : 'На весь экран',
+                style: const TextStyle(color: Color(0xFFB8FF9B), fontSize: 10, fontWeight: FontWeight.w800)),
+            ],
+          ]),
+        ),
+      ),
+    );
+  }
+
+  Widget _portraitAction(IconData icon, String label, VoidCallback onTap) => InkWell(
+    borderRadius: BorderRadius.circular(14), onTap: onTap,
+    child: Padding(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      child: Column(children: [
+        Icon(icon, color: Colors.white, size: 26),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(color: Colors.white60, fontSize: 10)),
+      ])));
+
+  Widget _bigSeek(IconData icon, String label, VoidCallback onTap) => Column(
+    mainAxisSize: MainAxisSize.min, children: [
+      IconButton(onPressed: onTap, icon: Icon(icon, color: Colors.white, size: 34)),
+      Text(label, style: const TextStyle(color: Colors.white70, fontSize: 10)),
+    ]);
+
+  Widget _playButton(bool playing, {bool large = false}) => Container(
+    width: large ? 76 : 62, height: large ? 76 : 62,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: const Color(0xFF9BFF83).withValues(alpha: .18),
+      border: Border.all(color: const Color(0xFFB8FF9B), width: 1.5),
+      boxShadow: const [BoxShadow(color: Color(0x9900E676), blurRadius: 24, spreadRadius: 2)]),
+    child: IconButton(
+      onPressed: _playPause,
+      iconSize: large ? 44 : 38,
+      color: const Color(0xFFB8FF9B),
+      icon: Icon(playing ? Icons.pause_rounded : Icons.play_arrow_rounded),
+    ));
 
   Widget _badge() => Container(
     padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
