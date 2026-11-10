@@ -543,6 +543,11 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+String _abilityCodeFromPath(String path) {
+  final match = RegExp(r'viper_ability_(C|Q|E|ult)', caseSensitive: false).firstMatch(path);
+  return match?.group(1)?.toUpperCase() ?? 'VIDEO';
+}
+
 Widget makeVideoWidget({
   required BuildContext context,
   required String title,
@@ -598,7 +603,7 @@ Widget makeVideoWidget({
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     child: Text(
-                      'VIPER // VIDEO',
+                      'VIPER // ${_abilityCodeFromPath(videoPath)}',
                       style: TextStyle(
                         color: Color(0xFFB8FF9B),
                         fontSize: 9,
