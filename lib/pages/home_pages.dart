@@ -16,10 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   final AudioPlayer _audioPlayer = AudioPlayer();
-  late final AnimationController _heroMotion = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 18),
-  )..repeat(reverse: true);
+  late final AnimationController _heroMotion;
 
   static const _abilities = <_AbilityData>[
     _AbilityData(
@@ -63,7 +60,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _heroMotion;
+    _heroMotion = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 18),
+    )..repeat(reverse: true);
   }
 
   Future<void> _playSound(String asset) async {
