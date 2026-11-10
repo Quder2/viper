@@ -169,7 +169,7 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
                               style: const TextStyle(color: Colors.white, fontSize: 11)),
                             Expanded(child: Slider(
                               min: 0, max: maxMs,
-                              value: (_seeking ? _seekMs : position.inMilliseconds.toDouble()).clamp(0, maxMs),
+                              value: (_seeking ? _seekMs : position.inMilliseconds.toDouble()).clamp(0, maxMs).toDouble(),
                               onChangeStart: (x) => setState(() { _seeking = true; _seekMs = x; }),
                               onChanged: (x) => setState(() => _seekMs = x),
                               onChangeEnd: (x) async {
