@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:viper/theme/viper_theme.dart';
 import 'package:viper/widgets/local_video_player_page.dart';
 import 'package:viper/widgets/toxic_particles.dart';
+import 'package:viper/widgets/video_asset_thumbnail.dart';
 
 class ToxicLabPage extends StatefulWidget {
   const ToxicLabPage({super.key});
@@ -129,7 +130,17 @@ class _ToxicLabPageState extends State<ToxicLabPage>
                   child: child,
                 ),
                 child: Stack(fit: StackFit.expand, children: [
-                  Image.asset(ability.preview, fit: BoxFit.cover),
+                  VideoAssetThumbnail(
+                    videoAsset: ability.video,
+                    fallbackAsset: ability.preview,
+                    timeMs: switch (ability.code) {
+                      'C' => 2200,
+                      'Q' => 2600,
+                      'E' => 2400,
+                      'ULT' => 3200,
+                      _ => 1800,
+                    },
+                  ),
                   DecoratedBox(decoration: BoxDecoration(
                     gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
                       colors: [Colors.black.withValues(alpha: .12), const Color(0xF5030A06)]))),
