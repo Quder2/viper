@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:viper/pages/full_story_page.dart';
+import 'package:viper/features/viper/toxic_lab/toxic_lab_page.dart';
 import 'package:viper/theme/viper_theme.dart';
 import 'package:viper/widgets/local_video_player_page.dart';
 import 'package:viper/widgets/toxic_particles.dart';
@@ -62,6 +63,12 @@ class _HomePageState extends State<HomePage> {
   void _openStory() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => const FullStoryPage()),
+    );
+  }
+
+  void _openToxicLab() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const ToxicLabPage()),
     );
   }
 
@@ -176,6 +183,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 28),
+                      _ToxicLabButton(onTap: _openToxicLab),
+                      const SizedBox(height: 12),
                       _StoryButton(onTap: _openStory),
                       const SizedBox(height: 24),
                       const Center(
@@ -677,6 +686,49 @@ class _StoryButton extends StatelessWidget {
                         'Биография • личность • внешность',
                         style: TextStyle(color: Color(0xFF9BB5A0), fontSize: 9),
                       ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF9BFF83), size: 15),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _ToxicLabButton extends StatelessWidget {
+  const _ToxicLabButton({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: const Color(0xFF102719),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .58)),
+              boxShadow: const [BoxShadow(color: Color(0x4400E676), blurRadius: 18)],
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.science_outlined, color: Color(0xFFB8FF9B), size: 23),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('TOXIC LAB  //  ИНТЕРАКТИВНАЯ ЛАБОРАТОРИЯ',
+                        style: TextStyle(color: Color(0xFFE2FFD8), fontSize: 10,
+                          fontWeight: FontWeight.w900, letterSpacing: .7)),
+                      SizedBox(height: 4),
+                      Text('Изучи способности • настрой эффекты • запусти демонстрацию',
+                        style: TextStyle(color: Color(0xFF9BB5A0), fontSize: 9)),
                     ],
                   ),
                 ),
