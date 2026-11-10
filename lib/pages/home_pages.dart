@@ -600,8 +600,8 @@ Widget makeVideoWidget({
                       color: const Color(0xFF9BFF83).withValues(alpha: 0.65),
                     ),
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     child: Text(
                       'VIPER // ${_abilityCodeFromPath(videoPath)}',
                       style: TextStyle(
