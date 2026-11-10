@@ -4,6 +4,7 @@ import 'package:viper/pages/full_story_page.dart';
 import 'package:viper/play_animation_widget.dart';
 import 'package:viper/widgets/local_video_player_page.dart';
 import 'package:viper/widgets/toxic_particles.dart';
+import 'package:viper/theme/viper_theme.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
