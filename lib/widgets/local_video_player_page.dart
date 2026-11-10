@@ -121,13 +121,12 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_fullscreen) {
-          await _fullscreenToggle();
-          return false;
+    return PopScope(
+      canPop: !_fullscreen,
+      onPopInvoked: (didPop) {
+        if (!didPop && _fullscreen) {
+          _fullscreenToggle();
         }
-        return true;
       },
       child: Scaffold(
         backgroundColor: const Color(0xFF030A06),
@@ -269,8 +268,8 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
                 PopupMenuButton<double>(
                   tooltip: 'Скорость', initialValue: _speed, color: const Color(0xFF102719),
                   onSelected: _speedTo,
-                  itemBuilder: (_) => [0.5, 0.75, 1, 1.25, 1.5, 2]
-                    .map((x) => PopupMenuItem(value: x, child: Text('$x x'))).toList(),
+                  itemBuilder: (_) => <double>[0.5, 0.75, 1, 1.25, 1.5, 2]
+                    .map((x) => PopupMenuItem<double>(value: x, child: Text('$x x'))).toList(),
                   child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     child: Text(_speed.toString() + 'x',
                       style: const TextStyle(color: Color(0xFFB8FF9B), fontWeight: FontWeight.bold))),
@@ -355,8 +354,8 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
                       PopupMenuButton<double>(
                         tooltip: 'Скорость', initialValue: _speed, color: const Color(0xFF102719),
                         onSelected: _speedTo,
-                        itemBuilder: (_) => [0.5, 0.75, 1, 1.25, 1.5, 2]
-                          .map((x) => PopupMenuItem(value: x, child: Text('$x x'))).toList(),
+                        itemBuilder: (_) => <double>[0.5, 0.75, 1, 1.25, 1.5, 2]
+                          .map((x) => PopupMenuItem<double>(value: x, child: Text('$x x'))).toList(),
                         child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text(_speed.toString() + 'x',
                             style: const TextStyle(color: Color(0xFFB8FF9B), fontWeight: FontWeight.bold))),
