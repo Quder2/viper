@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                           begin: Alignment.bottomRight,
                           colors: [
                             Colors.black,
-                            Colors.black.withOpacity(.4),
+                            Colors.black.withValues(alpha: 0.4),
                           ],
                         ),
                       ),
