@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:viper/pages/home_pages.dart';
+import 'package:viper/widgets/toxic_particles.dart';
 import 'package:viper/play_animation_widget.dart';
 
 class FullStoryPage extends StatelessWidget {
   const FullStoryPage({super.key});
-
-  void _navigateToHome(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +11,9 @@ class FullStoryPage extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
+          const Positioned.fill(
+            child: IgnorePointer(child: ToxicParticles()),
+          ),
           CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -230,8 +226,7 @@ class FullStoryPage extends StatelessWidget {
               child: PlayAnimationWidget(
                 delay: 2,
                 child: GestureDetector(
-                  onTap: () =>
-                      _navigateToHome(context), // Переход на главный экран
+                  onTap: () => Navigator.of(context).pop(),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30),
                     height: 50,
