@@ -477,25 +477,25 @@ class _HomePageState extends State<HomePage> {
                                 makeVideoWidget(
                                   context: context,
                                   title: 'Змеиный укус',
-                                  imagePath: 'assets/abilities/C.png',
+                                  imagePath: 'assets/images/2.png',
                                   videoPath: 'assets/videos/viper_ability_C.mp4',
                                 ),
                                 makeVideoWidget(
                                   context: context,
                                   title: 'Ядовитое облако',
-                                  imagePath: 'assets/abilities/Q.png',
+                                  imagePath: 'assets/images/3.png',
                                   videoPath: 'assets/videos/viper_ability_Q.mp4',
                                 ),
                                 makeVideoWidget(
                                   context: context,
                                   title: 'Токсичная завеса',
-                                  imagePath: 'assets/abilities/E.png',
+                                  imagePath: 'assets/images/4.png',
                                   videoPath: 'assets/videos/viper_ability_E.mp4',
                                 ),
                                 makeVideoWidget(
                                   context: context,
                                   title: 'Гнездо гадюки',
-                                  imagePath: 'assets/abilities/X.png',
+                                  imagePath: 'assets/images/1.png',
                                   videoPath: 'assets/videos/viper_ability_ult.mp4',
                                 )
                               ],
@@ -584,25 +584,73 @@ Widget makeVideoWidget({
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Text(
-                    title.toUpperCase(),
-                    style: const TextStyle(
-                      color: Color(0xFF9BFF83),
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.1,
+              Positioned(
+                top: 12,
+                left: 12,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF071B11).withValues(alpha: 0.78),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: const Color(0xFF9BFF83).withValues(alpha: 0.65),
+                    ),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: Text(
+                      'VIPER // VIDEO',
+                      style: TextStyle(
+                        color: Color(0xFFB8FF9B),
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.4,
+                      ),
                     ),
                   ),
                 ),
               ),
-              const Center(
-                child: Icon(
-                  Icons.play_circle_fill_rounded,
-                  color: Color(0xFF9BFF83),
-                  size: 64,
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
+                  child: Text(
+                    title.toUpperCase(),
+                    style: const TextStyle(
+                      color: Color(0xFFE2FFD8),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                      shadows: [
+                        Shadow(color: Color(0xFF00E676), blurRadius: 12),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF071B11).withValues(alpha: 0.62),
+                    border: Border.all(
+                      color: const Color(0xFFB8FF9B),
+                      width: 1.5,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x8800E676),
+                        blurRadius: 22,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.play_arrow_rounded,
+                    color: Color(0xFFB8FF9B),
+                    size: 42,
+                  ),
                 ),
               ),
             ],
