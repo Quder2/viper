@@ -94,7 +94,7 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
   String _time(Duration d) {
     final mm = d.inMinutes.remainder(60).toString().padLeft(2, '0');
     final ss = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return d.inHours > 0 ? '\${d.inHours}:$mm:$ss' : '$mm:$ss';
+    return d.inHours > 0 ? '${d.inHours}:$mm:$ss' : '$mm:$ss';
   }
 
   @override
