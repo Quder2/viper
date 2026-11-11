@@ -9,10 +9,10 @@ class SageVideoPlayerPage extends StatefulWidget {
   final String assetPath;
   final String code;
   @override
-  State<LocalVideoPlayerPage> createState() => _LocalVideoPlayerPageState();
+  State<SageVideoPlayerPage> createState() => _SageVideoPlayerPageState();
 }
 
-class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with SingleTickerProviderStateMixin {
+class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTickerProviderStateMixin {
   VideoPlayerController? _controller;
   late final AnimationController _glow;
   Object? _error;
