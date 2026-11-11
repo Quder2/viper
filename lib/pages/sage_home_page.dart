@@ -184,7 +184,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const Text(
                         'СПОКОЙСТВИЕ.\nЗАЩИТА.\nВОЗРОЖДЕНИЕ.',
                         style: TextStyle(
-                          color: Color(0xFFDBF7FF),
+                          color: SageTheme.textPrimary,
                           fontSize: 27,
                           height: 1.08,
                           fontWeight: FontWeight.w900,
@@ -195,7 +195,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const Text(
                         'Химик из США Sage устанавливает контроль над полем боя с помощью источающих токсичный газ устройств и ограничивает обзор противникам. А тех, кого ей не удастся отравить, она непременно перехитрит.',
                         style: TextStyle(
-                          color: Color(0xFF8CAEBB),
+                          color: SageTheme.muted,
                           height: 1.55,
                           fontSize: 13,
                         ),
@@ -233,7 +233,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const Text(
                         'Записи способностей • локальные материалы',
                         style: TextStyle(
-                          color: Color(0xFF7397A5),
+                          color: SageTheme.mutedBright,
                           fontSize: 11,
                           letterSpacing: .5,
                         ),
@@ -261,7 +261,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                         child: Text(
                           'SAGE // RADIANT ARCHIVE  •  END OF FILE',
                           style: TextStyle(
-                            color: Color(0xFF557D8A),
+                            color: SageTheme.mutedDeep,
                             fontSize: 8,
                             letterSpacing: 1.7,
                           ),
@@ -327,7 +327,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                     ),
                     radius: 1.15,
                     colors: [
-                      const Color(0xFF70D8E8).withValues(
+                      const SageTheme.cyan.withValues(
                         alpha: .035 + _heroMotion.value * .035,
                       ),
                       Colors.transparent,
@@ -358,9 +358,9 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xAA030A06),
-                  Color(0x22030A06),
-                  Color(0xFF07131C),
+                  SageTheme.overlayTop,
+                  SageTheme.overlayMid,
+                  SageTheme.background,
                 ],
                 stops: [0, .42, 1],
               ),
@@ -389,9 +389,9 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                   Row(
                     children: [
                       Material(
-                        color: const Color(0xCC102719),
+                        color: const SageTheme.overlayButton,
                         shape: const CircleBorder(
-                          side: BorderSide(color: Color(0x669BFF83)),
+                          side: BorderSide(color: SageTheme.outlineSoft),
                         ),
                         child: InkWell(
                           customBorder: const CircleBorder(),
@@ -399,19 +399,19 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                           child: const Padding(
                             padding: EdgeInsets.all(8),
                             child: Icon(Icons.grid_view_rounded,
-                                color: Color(0xFFBDEFFF), size: 17),
+                                color: SageTheme.ice, size: 17),
                           ),
                         ),
                       ),
                       const SizedBox(width: 10),
                       const Icon(Icons.shield_moon_outlined,
-                          color: Color(0xFF70D8E8), size: 17),
+                          color: SageTheme.cyan, size: 17),
                       const SizedBox(width: 8),
                       const Expanded(
                         child: Text(
                           'PROTOCOL // PERSONNEL FILE',
                           style: TextStyle(
-                            color: Color(0xFFBDEFFF),
+                            color: SageTheme.ice,
                             fontSize: 9,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 1.7,
@@ -427,7 +427,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       Text(
                         'AGENT  S-07',
                         style: TextStyle(
-                          color: Color(0xFF70D8E8),
+                          color: SageTheme.cyan,
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 2.4,
@@ -437,13 +437,13 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       Text(
                         'SAGE',
                         style: TextStyle(
-                          color: Color(0xFFDBF7FF),
+                          color: SageTheme.textPrimary,
                           fontSize: 54,
                           height: .98,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 3,
                           shadows: [
-                            Shadow(color: Color(0x9900E676), blurRadius: 24),
+                            Shadow(color: SageTheme.glowStrong, blurRadius: 24),
                           ],
                         ),
                       ),
@@ -451,7 +451,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       Text(
                         '«ТВОЯ ОБЯЗАННОСТЬ ЕЩЁ НЕ ВЫПОЛНЕНА.»',
                         style: TextStyle(
-                          color: Color(0xFFBDEFFF),
+                          color: SageTheme.ice,
                           fontSize: 10,
                           letterSpacing: 1.4,
                           fontWeight: FontWeight.w700,
@@ -481,14 +481,14 @@ class _TiltHint extends StatelessWidget {
       duration: const Duration(milliseconds: 220),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xCC07130B),
+        color: const SageTheme.overlayHint,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: const Color(0xFF70D8E8).withValues(alpha: active ? .7 : .28),
+          color: const SageTheme.cyan.withValues(alpha: active ? .7 : .28),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF70D8E8).withValues(alpha: active ? .16 : .04),
+            color: const SageTheme.cyan.withValues(alpha: active ? .16 : .04),
             blurRadius: active ? 18 : 8,
           ),
         ],
@@ -496,12 +496,12 @@ class _TiltHint extends StatelessWidget {
       child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.screen_rotation_alt, color: Color(0xFFBDEFFF), size: 13),
+          Icon(Icons.screen_rotation_alt, color: SageTheme.ice, size: 13),
           SizedBox(width: 7),
           Text(
             'НАКЛОНЯЙ УСТРОЙСТВО',
             style: TextStyle(
-              color: Color(0xFFBDEFFF),
+              color: SageTheme.ice,
               fontSize: 8,
               fontWeight: FontWeight.w800,
               letterSpacing: .8,
@@ -541,7 +541,7 @@ class _ArchiveLabel extends StatelessWidget {
   Widget build(BuildContext context) => Text(
         text,
         style: const TextStyle(
-          color: Color(0xFF70D8E8),
+          color: SageTheme.cyan,
           fontSize: 9,
           letterSpacing: 1.8,
           fontWeight: FontWeight.w800,
@@ -562,10 +562,10 @@ class _SectionHeading extends StatelessWidget {
             width: 3,
             height: 34,
             decoration: BoxDecoration(
-              color: const Color(0xFF70D8E8),
+              color: const SageTheme.cyan,
               borderRadius: BorderRadius.circular(8),
               boxShadow: const [
-                BoxShadow(color: Color(0x8800E676), blurRadius: 12),
+                BoxShadow(color: SageTheme.glowMedium, blurRadius: 12),
               ],
             ),
           ),
@@ -576,7 +576,7 @@ class _SectionHeading extends StatelessWidget {
               Text(
                 eyebrow,
                 style: const TextStyle(
-                  color: Color(0xFF7397A5),
+                  color: SageTheme.mutedBright,
                   fontSize: 8,
                   letterSpacing: 1.8,
                   fontWeight: FontWeight.w700,
@@ -586,7 +586,7 @@ class _SectionHeading extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  color: Color(0xFFDBF7FF),
+                  color: SageTheme.textPrimary,
                   fontSize: 19,
                   letterSpacing: 1.2,
                   fontWeight: FontWeight.w900,
@@ -607,19 +607,19 @@ class _DataChip extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
         decoration: BoxDecoration(
-          color: const Color(0xFF102532),
+          color: const SageTheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .2)),
+          border: Border.all(color: const SageTheme.cyan.withValues(alpha: .2)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: const Color(0xFF70D8E8)),
+            Icon(icon, size: 14, color: const SageTheme.cyan),
             const SizedBox(width: 7),
             Text(
               label,
               style: const TextStyle(
-                color: Color(0xFFBDEFFF),
+                color: SageTheme.ice,
                 fontSize: 8,
                 fontWeight: FontWeight.w800,
                 letterSpacing: .8,
@@ -637,18 +637,18 @@ class _StatusPill extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFF173746),
+          color: const SageTheme.elevated,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .55)),
+          border: Border.all(color: const SageTheme.cyan.withValues(alpha: .55)),
         ),
         child: const Row(
           children: [
-            Icon(Icons.circle, color: Color(0xFF70D8E8), size: 6),
+            Icon(Icons.circle, color: SageTheme.cyan, size: 6),
             SizedBox(width: 6),
             Text(
               'ACTIVE',
               style: TextStyle(
-                color: Color(0xFFBDEFFF),
+                color: SageTheme.ice,
                 fontSize: 8,
                 letterSpacing: 1.2,
                 fontWeight: FontWeight.w900,
@@ -674,11 +674,11 @@ class _AbilityPanel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xD90B1710),
+          color: const SageTheme.panelGlass,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .17)),
+          border: Border.all(color: const SageTheme.cyan.withValues(alpha: .17)),
           boxShadow: const [
-            BoxShadow(color: Color(0x2200E676), blurRadius: 18, spreadRadius: 1),
+            BoxShadow(color: SageTheme.glowSubtle, blurRadius: 18, spreadRadius: 1),
           ],
         ),
         child: Column(
@@ -691,9 +691,9 @@ class _AbilityPanel extends StatelessWidget {
                   height: 48,
                   padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF173746),
+                    color: const SageTheme.elevated,
                     borderRadius: BorderRadius.circular(13),
-                    border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .25)),
+                    border: Border.all(color: const SageTheme.cyan.withValues(alpha: .25)),
                   ),
                   child: Image.asset(ability.image, fit: BoxFit.contain),
                 ),
@@ -705,7 +705,7 @@ class _AbilityPanel extends StatelessWidget {
                       Text(
                         'SAGE // ${ability.code}',
                         style: const TextStyle(
-                          color: Color(0xFF70D8E8),
+                          color: SageTheme.cyan,
                           fontSize: 8,
                           letterSpacing: 1.5,
                           fontWeight: FontWeight.w800,
@@ -715,7 +715,7 @@ class _AbilityPanel extends StatelessWidget {
                       Text(
                         ability.title.toUpperCase(),
                         style: const TextStyle(
-                          color: Color(0xFFDBF7FF),
+                          color: SageTheme.textPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
                           letterSpacing: .7,
@@ -727,7 +727,7 @@ class _AbilityPanel extends StatelessWidget {
                 IconButton(
                   tooltip: 'Прослушать звук способности',
                   onPressed: onSound,
-                  icon: const Icon(Icons.volume_up_rounded, color: Color(0xFF70D8E8)),
+                  icon: const Icon(Icons.volume_up_rounded, color: SageTheme.cyan),
                 ),
               ],
             ),
@@ -735,7 +735,7 @@ class _AbilityPanel extends StatelessWidget {
             Text(
               ability.description,
               style: const TextStyle(
-                color: Color(0xFF8CAEBB),
+                color: SageTheme.muted,
                 fontSize: 11,
                 height: 1.5,
               ),
@@ -748,9 +748,9 @@ class _AbilityPanel extends StatelessWidget {
                 icon: const Icon(Icons.play_arrow_rounded, size: 19),
                 label: const Text('ОТКРЫТЬ ЗАПИСЬ'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFBDEFFF),
-                  side: BorderSide(color: const Color(0xFF70D8E8).withValues(alpha: .45)),
-                  backgroundColor: const Color(0xFF70D8E8).withValues(alpha: .07),
+                  foregroundColor: const SageTheme.ice,
+                  side: BorderSide(color: const SageTheme.cyan.withValues(alpha: .45)),
+                  backgroundColor: const SageTheme.cyan.withValues(alpha: .07),
                   textStyle: const TextStyle(
                     fontSize: 9,
                     letterSpacing: 1.2,
@@ -784,7 +784,7 @@ class _VideoArchiveCard extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
         width: 238,
         child: Material(
-          color: const Color(0xFF101812),
+          color: const SageTheme.deepSurface,
           borderRadius: BorderRadius.circular(17),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
@@ -802,7 +802,7 @@ class _VideoArchiveCard extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Color(0x55030A06), Color(0xF5030A06)],
+                      colors: [Color(0x5507131C), Color(0xF507131C)],
                     ),
                   ),
                 ),
@@ -812,14 +812,14 @@ class _VideoArchiveCard extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF102532).withValues(alpha: .85),
+                      color: const SageTheme.surface.withValues(alpha: .85),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .55)),
+                      border: Border.all(color: const SageTheme.cyan.withValues(alpha: .55)),
                     ),
                     child: Text(
                       'SAGE // ${ability.code}',
                       style: const TextStyle(
-                        color: Color(0xFFBDEFFF),
+                        color: SageTheme.ice,
                         fontSize: 8,
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.w900,
@@ -831,17 +831,17 @@ class _VideoArchiveCard extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xAA071B11),
+                      color: SageTheme.overlayButton,
                       border: Border.fromBorderSide(
-                        BorderSide(color: Color(0xFFBDEFFF), width: 1.4),
+                        BorderSide(color: SageTheme.ice, width: 1.4),
                       ),
                       boxShadow: [
-                        BoxShadow(color: Color(0x8800E676), blurRadius: 20),
+                        BoxShadow(color: SageTheme.glowMedium, blurRadius: 20),
                       ],
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(12),
-                      child: Icon(Icons.play_arrow_rounded, color: Color(0xFFBDEFFF), size: 30),
+                      child: Icon(Icons.play_arrow_rounded, color: SageTheme.ice, size: 30),
                     ),
                   ),
                 ),
@@ -854,7 +854,7 @@ class _VideoArchiveCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: Color(0xFFDBF7FF),
+                      color: SageTheme.textPrimary,
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
                       letterSpacing: .8,
@@ -874,7 +874,7 @@ class _StoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        color: const Color(0xFF173746),
+        color: const SageTheme.elevated,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
@@ -883,14 +883,14 @@ class _StoryButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .48)),
+              border: Border.all(color: const SageTheme.cyan.withValues(alpha: .48)),
               boxShadow: const [
-                BoxShadow(color: Color(0x3300E676), blurRadius: 18),
+                BoxShadow(color: Color(0x3339B9D3), blurRadius: 18),
               ],
             ),
             child: const Row(
               children: [
-                Icon(Icons.folder_special_outlined, color: Color(0xFFBDEFFF), size: 22),
+                Icon(Icons.folder_special_outlined, color: SageTheme.ice, size: 22),
                 SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -899,7 +899,7 @@ class _StoryButton extends StatelessWidget {
                       Text(
                         'ПОЛНОЕ ДОСЬЕ АГЕНТА',
                         style: TextStyle(
-                          color: Color(0xFFDBF7FF),
+                          color: SageTheme.textPrimary,
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1,
@@ -908,12 +908,12 @@ class _StoryButton extends StatelessWidget {
                       SizedBox(height: 4),
                       Text(
                         'Биография • личность • внешность',
-                        style: TextStyle(color: Color(0xFF8CAEBB), fontSize: 9),
+                        style: TextStyle(color: SageTheme.muted, fontSize: 9),
                       ),
                     ],
                   ),
                 ),
-                Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF70D8E8), size: 15),
+                Icon(Icons.arrow_forward_ios_rounded, color: SageTheme.cyan, size: 15),
               ],
             ),
           ),
