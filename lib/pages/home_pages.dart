@@ -91,8 +91,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final nextX = (event.z / 9.8).clamp(-1.0, 1.0).toDouble();
     final nextY = (event.x / 9.8).clamp(-1.0, 1.0).toDouble();
     setState(() {
-      _tiltX = _tiltX * .78 + nextX * .22;
-      _tiltY = _tiltY * .78 + nextY * .22;
+      _tiltX = _tiltX * .68 + nextX * .32;
+      _tiltY = _tiltY * .68 + nextY * .32;
     });
   }
 
@@ -272,12 +272,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   alignment: Alignment.center,
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, .0012)
-                    ..rotateX(_tiltX * -.075)
-                    ..rotateY(_tiltY * .075),
+                    ..rotateX(_tiltX * -.14)
+                    ..rotateY(_tiltY * .14),
                   child: Transform.translate(
                     offset: Offset(
-                      -9 + idle * 18 + _tiltY * -15,
-                      _tiltX * -13,
+                      -9 + idle * 18 + _tiltY * -30,
+                      _tiltX * -26,
                     ),
                     child: Transform.scale(
                       scale: 1.045 + idle * .045 + pulse * .035,
