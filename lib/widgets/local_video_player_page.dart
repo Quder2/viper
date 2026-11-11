@@ -271,7 +271,7 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
                   itemBuilder: (_) => <double>[0.5, 0.75, 1, 1.25, 1.5, 2]
                     .map((x) => PopupMenuItem<double>(value: x, child: Text('$x x'))).toList(),
                   child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    child: Text(_speed.toString() + 'x',
+                    child: Text('${_speed}x',
                       style: const TextStyle(color: Color(0xFFB8FF9B), fontWeight: FontWeight.bold))),
                 ),
               ]),
@@ -295,7 +295,7 @@ class _LocalVideoPlayerPageState extends State<LocalVideoPlayerPage> with Single
           center: Alignment.center, radius: 1.2, colors: [Color(0xFF102719), Colors.black]))),
         Center(child: AspectRatio(aspectRatio: v.aspectRatio, child: VideoPlayer(c))),
         Positioned.fill(child: IgnorePointer(child: AnimatedBuilder(
-          animation: _glow, builder: (_, __) => CustomPaint(painter: _ToxicGlow(_glow.value))))),
+          animation: _glow, builder: (_, _) => CustomPaint(painter: _ToxicGlow(_glow.value))))),
         if (_controls)
           Positioned.fill(child: AnimatedOpacity(
             opacity: _controls ? 1 : 0, duration: const Duration(milliseconds: 180),
