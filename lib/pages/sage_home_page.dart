@@ -153,7 +153,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                     children: [
                       const _ArchiveLabel('AGENT DOSSIER  //  CLASSIFIED'),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         SageProfileConfig.profile.headline,
                         style: TextStyle(
                           color: SageTheme.textPrimary,
@@ -164,7 +164,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                         ),
                       ),
                       const SizedBox(height: 14),
-                      const Text(
+                      Text(
                         SageProfileConfig.profile.description,
                         style: TextStyle(
                           color: SageTheme.muted,
@@ -173,7 +173,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                         ),
                       ),
                       const SizedBox(height: 22),
-                      const Row(
+                      Row(
                         children: [
                           _DataChip(icon: Icons.shield_outlined, label: SageProfileConfig.profile.role),
                           SizedBox(width: 8),
@@ -181,7 +181,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                         ],
                       ),
                       const SizedBox(height: 30),
-                      const _SectionHeading(
+                      _SectionHeading(
                         eyebrow: SageProfileConfig.profile.loadoutKicker,
                         title: 'АРСЕНАЛ',
                       ),
@@ -197,12 +197,12 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                         ),
                       ),
                       const SizedBox(height: 22),
-                      const _SectionHeading(
+                      _SectionHeading(
                         eyebrow: SageProfileConfig.profile.footageKicker,
                         title: 'ВИДЕОАРХИВ',
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         SageProfileConfig.profile.footageDescription,
                         style: TextStyle(
                           color: SageTheme.mutedBright,
@@ -395,7 +395,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         'AGENT  ${SageProfileConfig.profile.agentCode}',
                         style: TextStyle(
