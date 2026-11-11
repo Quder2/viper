@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:viper/pages/home_pages.dart';
 import 'package:viper/pages/sage_home_page.dart';
 import 'package:viper/config/sage_profile_config.dart';
+import 'package:viper/theme/sage_theme.dart';
 
 class AgentSelectionPage extends StatelessWidget {
   const AgentSelectionPage({super.key});
@@ -86,11 +87,11 @@ class AgentSelectionPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       _AgentCard(
-                        name: 'SAGE',
+                        name: SageProfileConfig.name,
                         subtitle: 'СТРАЖ  •  КИТАЙ',
                         description: 'Исцеление. Защита союзников. Возвращение павших.',
-                        accent: const Color(0xFF9DEBEE),
-                        background: const Color(0xFF102A38),
+                        accent: SageTheme.cyan,
+                        background: SageTheme.surface,
                         image: SageProfileConfig.heroImage,
                         localImage: true,
                         code: 'S-07',
