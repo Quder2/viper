@@ -142,6 +142,17 @@ class _SageHomePageState extends State<SageHomePage> {
                   _InfoChip(icon: Icons.public_rounded, label: 'КИТАЙ'),
                 ]),
                 const SizedBox(height: 30),
+                const _SectionTitle(kicker: 'RADIANT LOADOUT', title: 'АРСЕНАЛ'),
+                const SizedBox(height: 14),
+                ..._abilities.map((ability) => Padding(
+                  padding: const EdgeInsets.only(bottom: 11),
+                  child: _AbilityCard(
+                    ability: ability,
+                    isPlaying: _playingFile == ability.soundAsset,
+                    onSound: () => _playAbilitySound(ability),
+                    onTap: () => _openVideo(ability),
+                  ),
+                )),
                 const _SectionTitle(kicker: 'LOCAL RIOT FOOTAGE', title: 'АРСЕНАЛ // ВИДЕО'),
                 const SizedBox(height: 7),
                 const Text('Локальные видеозаписи способностей. Добавь MP4 в assets/sage/videos — они будут доступны даже без интернета.',
@@ -160,17 +171,6 @@ class _SageHomePageState extends State<SageHomePage> {
                   ),
                 ),
                 const SizedBox(height: 18),
-                const _SectionTitle(kicker: 'RADIANT LOADOUT', title: 'АРСЕНАЛ'),
-                const SizedBox(height: 14),
-                ..._abilities.map((ability) => Padding(
-                  padding: const EdgeInsets.only(bottom: 11),
-                  child: _AbilityCard(
-                    ability: ability,
-                    isPlaying: _playingFile == ability.soundAsset,
-                    onSound: () => _playAbilitySound(ability),
-                    onTap: () => _openVideo(ability),
-                  ),
-                )),
                 const SizedBox(height: 22),
                 SizedBox(width: double.infinity, child: OutlinedButton.icon(
                   onPressed: _openStory,
