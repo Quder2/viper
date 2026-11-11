@@ -5,6 +5,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:viper/pages/full_story_page.dart';
+import 'package:viper/config/viper_profile_config.dart';
+import 'package:viper/models/agent_ability_data.dart';
 import 'package:viper/pages/agent_selection_page.dart';
 import 'package:viper/features/viper/toxic_lab/toxic_lab_page.dart';
 import 'package:viper/theme/viper_theme.dart';
@@ -30,44 +32,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   double _tiltX = 0;
   double _tiltY = 0;
 
-  static const _abilities = <_AbilityData>[
-    _AbilityData(
-      code: 'C',
-      title: 'Змеиный укус',
-      image: 'assets/viper/abilities/C.png',
-      sound: 'viper/voice/C_act.mp3',
-      description: 'ВЫБИРАЕТ капсулу с кислотой. Нажмите кнопку ОГОНЬ, чтобы запустить капсулу, которая разбивается при падении, оставляя после себя лужу кислоты. Попавшие в кислоту противники получают урон и становятся уязвимыми.',
-      video: 'assets/viper/videos/viper_ability_C.mp4',
-      preview: 'assets/viper/images/2.png',
-    ),
-    _AbilityData(
-      code: 'Q',
-      title: 'Ядовитое облако',
-      image: 'assets/viper/abilities/Q.png',
-      sound: 'viper/voice/Q_act.mp3',
-      description: 'ВЫБИРАЕТ распылитель газа. Нажмите кнопку ОГОНЬ, чтобы выбросить распылитель, который остается на месте до конца раунда. Нажмите кнопку АЛЬТ. ОГОНЬ, чтобы сделать бросок снизу. Примените умение повторно, чтобы выпустить из распылителя облако ядовитого дыма, расходуя топливо. Можно использовать больше одного раза, а также подобрать и РАЗМЕСТИТЬ ЗАНОВО.',
-      video: 'assets/viper/videos/viper_ability_Q.mp4',
-      preview: 'assets/viper/images/3.png',
-    ),
-    _AbilityData(
-      code: 'E',
-      title: 'Токсичная завеса',
-      image: 'assets/viper/abilities/E.png',
-      sound: 'viper/voice/E_act.mp3',
-      description: 'ВЫБИРАЕТ распылители газа, проникающие сквозь препятствия. Нажмите кнопку ОГОНЬ, чтобы выстрелить длинной очередью распылителей. При повторном использовании распылители образуют стену ядовитого дыма, расходуя топливо. Умение можно применять больше одного раза.',
-      video: 'assets/viper/videos/viper_ability_E.mp4',
-      preview: 'assets/viper/images/4.png',
-    ),
-    _AbilityData(
-      code: 'ULT',
-      title: 'Гнездо гадюки',
-      image: 'assets/viper/abilities/X.png',
-      sound: 'viper/voice/X_act.mp3',
-      description: 'ВЫБИРАЕТ распылитель химикатов. Нажмите кнопку ОГОНЬ, чтобы распылить вокруг Viper облако химикатов, уменьшая дальность видимости игроков и максимальный запас здоровья находящихся в нем врагов. УДЕРЖИВАЙТЕ кнопку умения, чтобы остановить распыление.',
-      video: 'assets/viper/videos/viper_ability_ult.mp4',
-      preview: 'assets/viper/images/1.png',
-    ),
-  ];
+
 
   @override
   void initState() {
@@ -145,7 +110,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  void _openVideo(_AbilityData ability) {
+  void _openVideo(AgentAbilityData ability) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => LocalVideoPlayerPage(
@@ -219,7 +184,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         title: 'АРСЕНАЛ',
                       ),
                       const SizedBox(height: 14),
-                      ..._abilities.map(
+                      ...ViperProfileConfig.profile.abilities.map(
                         (ability) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _AbilityPanel(
@@ -248,10 +213,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         height: 184,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: _abilities.length,
+                          itemCount: ViperProfileConfig.profile.abilities.length,
                           separatorBuilder: (_, _) => const SizedBox(width: 12),
                           itemBuilder: (context, index) {
-                            final ability = _abilities[index];
+                            final ability = ViperProfileConfig.profile.abilities[index];
                             return _VideoArchiveCard(
                               ability: ability,
                               onTap: () => _openVideo(ability),
@@ -520,26 +485,6 @@ class _TiltHint extends StatelessWidget {
   }
 }
 
-class _AbilityData {
-  const _AbilityData({
-    required this.code,
-    required this.title,
-    required this.image,
-    required this.sound,
-    required this.description,
-    required this.video,
-    required this.preview,
-  });
-
-  final String code;
-  final String title;
-  final String image;
-  final String sound;
-  final String description;
-  final String video;
-  final String preview;
-}
-
 class _ArchiveLabel extends StatelessWidget {
   const _ArchiveLabel(this.text);
   final String text;
@@ -673,7 +618,7 @@ class _AbilityPanel extends StatelessWidget {
     required this.onVideo,
   });
 
-  final _AbilityData ability;
+  final AgentAbilityData ability;
   final VoidCallback onSound;
   final VoidCallback onVideo;
 
@@ -710,7 +655,7 @@ class _AbilityPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'VIPER // ${ability.code}',
+                        '${ViperProfileConfig.profile.name} // ${ability.code}',
                         style: const TextStyle(
                           color: Color(0xFF9BFF83),
                           fontSize: 8,
@@ -784,7 +729,7 @@ int _previewTimeForAbility(String code) => switch (code) {
 
 class _VideoArchiveCard extends StatelessWidget {
   const _VideoArchiveCard({required this.ability, required this.onTap});
-  final _AbilityData ability;
+  final AgentAbilityData ability;
   final VoidCallback onTap;
 
   @override
@@ -824,7 +769,7 @@ class _VideoArchiveCard extends StatelessWidget {
                       border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .55)),
                     ),
                     child: Text(
-                      'VIPER // ${ability.code}',
+                      '${ViperProfileConfig.profile.name} // ${ability.code}',
                       style: const TextStyle(
                         color: Color(0xFFB8FF9B),
                         fontSize: 8,
