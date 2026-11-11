@@ -149,96 +149,110 @@ class _FullStoryPageState extends State<FullStoryPage> with TickerProviderStateM
   Widget _hero(BuildContext context) {
     return SizedBox(
       height: 330,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          AnimatedBuilder(
-            animation: _tiltSmoothing,
-            child: Image.asset('assets/images/1.png', fit: BoxFit.cover),
-            builder: (context, child) => Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, .0012)
-                ..rotateX(_tiltX)
-                ..rotateY(_tiltY)
-                ..translate(_tiltY * 18, _tiltX * 14)
-                ..scale(1.07),
-              child: child,
-            ),
-          ),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0x99030A06), Color(0x22030A06), Color(0xFF030A06)],
+      child: ColoredBox(
+        color: const Color(0xFF030A06),
+        child: ClipRect(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ClipRect(
+                child: AnimatedBuilder(
+                  animation: _tiltSmoothing,
+                  child: Image.asset('assets/images/1.png', fit: BoxFit.cover),
+                  builder: (context, child) => Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, .0012)
+                      ..rotateX(_tiltX)
+                      ..rotateY(_tiltY)
+                      ..translate(_tiltY * 18, _tiltX * 14)
+                      ..scale(1.15),
+                    child: child,
+                  ),
+                ),
               ),
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 10, 18, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      _BackIcon(onTap: () => Navigator.of(context).pop()),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'TACTICAL ARCHIVE',
-                        style: TextStyle(
-                          color: Color(0xFFB8FF9B),
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.8,
-                        ),
-                      ),
-                      const Spacer(),
-                      const _ClassifiedPill(),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0, .48, .70, .88, 1],
+                    colors: [
+                      Color(0x99030A06),
+                      Color(0x33030A06),
+                      Color(0x88030A06),
+                      Color(0xE6030A06),
+                      Color(0xFF030A06),
                     ],
                   ),
-                  const Column(
+                ),
+              ),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 10, 18, 20),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'AGENT PROFILE  //  V-01',
-                        style: TextStyle(
-                          color: Color(0xFF9BFF83),
-                          fontSize: 9,
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      Row(
+                        children: [
+                          _BackIcon(onTap: () => Navigator.of(context).pop()),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'TACTICAL ARCHIVE',
+                            style: TextStyle(
+                              color: Color(0xFFB8FF9B),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.8,
+                            ),
+                          ),
+                          const Spacer(),
+                          const _ClassifiedPill(),
+                        ],
                       ),
-                      SizedBox(height: 5),
-                      Text(
-                        'VIPER',
-                        style: TextStyle(
-                          color: Color(0xFFE2FFD8),
-                          fontSize: 48,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 3,
-                          shadows: [Shadow(color: Color(0x9900E676), blurRadius: 22)],
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'ИСТОРИЯ ПЕРСОНАЖА',
-                        style: TextStyle(
-                          color: Color(0xFFB8FF9B),
-                          fontSize: 10,
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'AGENT PROFILE  //  V-01',
+                            style: TextStyle(
+                              color: Color(0xFF9BFF83),
+                              fontSize: 9,
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'VIPER',
+                            style: TextStyle(
+                              color: Color(0xFFE2FFD8),
+                              fontSize: 48,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 3,
+                              shadows: [Shadow(color: Color(0x9900E676), blurRadius: 22)],
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'ИСТОРИЯ ПЕРСОНАЖА',
+                            style: TextStyle(
+                              color: Color(0xFFB8FF9B),
+                              fontSize: 10,
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
