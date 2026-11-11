@@ -6,13 +6,13 @@ class SageHomePage extends StatelessWidget {
   const SageHomePage({super.key});
 
   static const _portrait =
-      'https://media.valorant-api.com/agents/5f8d3a7f-467b-97f3-062c-13acf203c006/fullportrait.png';
+      'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/fullportrait.png';
   static const _background =
-      'https://media.valorant-api.com/agents/5f8d3a7f-467b-97f3-062c-13acf203c006/background.png';
+      'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/background.png';
 
   static const _abilities = <_SageAbility>[
     _SageAbility('C', 'СФЕРА БАРЬЕРА', 'Создаёт прочную ледяную стену, перекрывающую проход и меняющую геометрию боя.', Icons.ac_unit_rounded),
-    _SageAbility('Q', 'СФЕРА ЗАМЕДЛЕНИЯ', 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников.', Icons.snowing),
+    _SageAbility('Q', 'СФЕРА ЗАМЕДЛЕНИЯ', 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников.', Icons.ac_unit_rounded),
     _SageAbility('E', 'СФЕРА ЛЕЧЕНИЯ', 'Восстанавливает здоровье себе или раненому союзнику.', Icons.favorite_rounded),
     _SageAbility('X', 'ВОЗРОЖДЕНИЕ', 'Возвращает павшего союзника к жизни. Последний шанс переломить ход раунда.', Icons.auto_awesome_rounded),
   ];
