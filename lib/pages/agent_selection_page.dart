@@ -5,8 +5,6 @@ import 'package:viper/pages/sage_home_page.dart';
 class AgentSelectionPage extends StatelessWidget {
   const AgentSelectionPage({super.key});
 
-  static const _sagePortrait =
-      'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/fullportrait.png';
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +90,8 @@ class AgentSelectionPage extends StatelessWidget {
                         description: 'Исцеление. Защита союзников. Возвращение павших.',
                         accent: const Color(0xFF9DEBEE),
                         background: const Color(0xFF102A38),
-                        image: _sagePortrait,
+                        image: 'assets/sage/images/1.jpg',
+                        localImage: true,
                         code: 'S-07',
                         onTap: () => Navigator.of(context).pushReplacement(
                           MaterialPageRoute<void>(builder: (_) => const SageHomePage()),
