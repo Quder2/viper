@@ -14,10 +14,10 @@ class ToxicLabPage extends StatefulWidget {
 
 class _ToxicLabPageState extends State<ToxicLabPage> with SingleTickerProviderStateMixin {
   static const _abilities = <_LabAbility>[
-    _LabAbility('C','ЗМЕИНЫЙ УКУС','Кислотная капсула','assets/abilities/C.png','assets/images/2.png','assets/videos/viper_ability_C.mp4','Кислотный снаряд создаёт опасную зону и ослабляет противников.','sound/C_act.mp3',0),
-    _LabAbility('Q','ЯДОВИТОЕ ОБЛАКО','Токсичный распылитель','assets/abilities/Q.png','assets/images/3.png','assets/videos/viper_ability_Q.mp4','Сфера выпускает токсичный дым. Поддержание облака расходует топливо.','sound/Q_act.mp3',4),
-    _LabAbility('E','ТОКСИЧНАЯ ЗАВЕСА','Линия распылителей','assets/abilities/E.png','assets/images/4.png','assets/videos/viper_ability_E.mp4','Разворачивает протяжённую стену токсичного дыма и расходует топливо.','sound/E_act.mp3',5),
-    _LabAbility('ULT','ГНЕЗДО ГАДЮКИ','Область химического заражения','assets/abilities/X.png','assets/images/1.png','assets/videos/viper_ability_ult.mp4','Создаёт большую зону заражения. Это самый затратный модуль симулятора.','sound/X_act.mp3',7),
+    _LabAbility('C','ЗМЕИНЫЙ УКУС','Кислотная капсула','assets/viper/abilities/C.png','assets/viper/images/2.png','assets/viper/videos/viper_ability_C.mp4','Кислотный снаряд создаёт опасную зону и ослабляет противников.','viper/voice/C_act.mp3',0),
+    _LabAbility('Q','ЯДОВИТОЕ ОБЛАКО','Токсичный распылитель','assets/viper/abilities/Q.png','assets/viper/images/3.png','assets/viper/videos/viper_ability_Q.mp4','Сфера выпускает токсичный дым. Поддержание облака расходует топливо.','viper/voice/Q_act.mp3',4),
+    _LabAbility('E','ТОКСИЧНАЯ ЗАВЕСА','Линия распылителей','assets/viper/abilities/E.png','assets/viper/images/4.png','assets/viper/videos/viper_ability_E.mp4','Разворачивает протяжённую стену токсичного дыма и расходует топливо.','viper/voice/E_act.mp3',5),
+    _LabAbility('ULT','ГНЕЗДО ГАДЮКИ','Область химического заражения','assets/viper/abilities/X.png','assets/viper/images/1.png','assets/viper/videos/viper_ability_ult.mp4','Создаёт большую зону заражения. Это самый затратный модуль симулятора.','viper/voice/X_act.mp3',7),
   ];
   late final AnimationController _pulse = AnimationController(vsync:this,duration:const Duration(milliseconds:1700))..repeat(reverse:true);
   final AudioPlayer _audio = AudioPlayer();
