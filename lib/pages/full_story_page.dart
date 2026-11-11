@@ -169,8 +169,8 @@ class _FullStoryPageState extends State<FullStoryPage> with TickerProviderStateM
                       ..setEntry(3, 2, .0012)
                       ..rotateX(_tiltX)
                       ..rotateY(_tiltY)
-                      ..translate(_tiltY * 18, 22 + _tiltX * 8)
-                      ..scale(1.08),
+                      ..translateByDouble(_tiltY * 18, 22 + _tiltX * 8, 0, 1)
+                      ..scaleByDouble(1.08, 1.08, 1.08, 1),
                     child: child,
                   ),
                 ),
