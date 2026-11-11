@@ -132,7 +132,7 @@ class _ToxicLabPageState extends State<ToxicLabPage> with SingleTickerProviderSt
           const SizedBox(height:14),
           AnimatedBuilder(animation:_pulse,builder:(context,child)=>Container(height:218,
             decoration:BoxDecoration(borderRadius:BorderRadius.circular(18),
-              border:Border.all(color:ViperTheme.toxicGreen.withValues(alpha:_active?.4+_pulse.value*.4:.2)),
+              border:Border.all(color:ViperTheme.toxicGreen.withValues(alpha:_active ? .4+_pulse.value*.4 : .2)),
               boxShadow:_active?[BoxShadow(color:ViperTheme.toxicGreen.withValues(alpha:.08+_pulse.value*.12),blurRadius:18+_pulse.value*14)]:null),
             clipBehavior:Clip.antiAlias,child:child),
             child:Stack(fit:StackFit.expand,children:[
@@ -144,7 +144,7 @@ class _ToxicLabPageState extends State<ToxicLabPage> with SingleTickerProviderSt
                 painter:_AbilityEffectPainter(code:a.code,progress:_pulse.value,intensity:_intensity)))),
               if(_active) const Positioned.fill(child:IgnorePointer(child:ToxicParticles(particleCount:34,opacity:.45))),
               Positioned(left:14,right:14,bottom:13,child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-                Text('VIPER // \${a.code} // LIVE FEED',style:const TextStyle(color:ViperTheme.toxicGreen,fontSize:8,letterSpacing:1.5,fontWeight:FontWeight.w900)),
+                Text('VIPER // ${a.code} // LIVE FEED',style:const TextStyle(color:ViperTheme.toxicGreen,fontSize:8,letterSpacing:1.5,fontWeight:FontWeight.w900)),
                 const SizedBox(height:5),
                 Text(a.title,style:const TextStyle(color:Color(0xFFE2FFD8),fontSize:18,fontWeight:FontWeight.w900,letterSpacing:.6)),
                 const SizedBox(height:4),
@@ -167,14 +167,14 @@ class _ToxicLabPageState extends State<ToxicLabPage> with SingleTickerProviderSt
                 const Icon(Icons.propane_tank_outlined,color:ViperTheme.toxicGreen,size:18),
                 const SizedBox(width:8),
                 const Expanded(child:Text('ЗАПАС ТОКСИНА',style:TextStyle(color:ViperTheme.secondaryText,fontSize:9,fontWeight:FontWeight.w900,letterSpacing:1))),
-                Text('\${_fuel.round()}%',style:TextStyle(color:fuelColor,fontWeight:FontWeight.w900,fontSize:16)),
+                Text('${_fuel.round()}%',style:TextStyle(color:fuelColor,fontWeight:FontWeight.w900,fontSize:16)),
               ]),
               const SizedBox(height:10),
               ClipRRect(borderRadius:BorderRadius.circular(20),child:LinearProgressIndicator(value:_fuel/100,minHeight:8,
                 backgroundColor:const Color(0xFF17231B),valueColor:AlwaysStoppedAnimation<Color>(fuelColor))),
               const SizedBox(height:8),
               Row(children:[
-                Expanded(child:Text(_active&&a.fuelRate>0?'РАСХОД: \${a.fuelRate.toStringAsFixed(1)} ЕД./СЕК':'ВОССТАНОВЛЕНИЕ: 2.8 ЕД./СЕК',
+                Expanded(child:Text(_active&&a.fuelRate>0?'РАСХОД: ${a.fuelRate.toStringAsFixed(1)} ЕД./СЕК':'ВОССТАНОВЛЕНИЕ: 2.8 ЕД./СЕК',
                   style:const TextStyle(color:ViperTheme.secondaryText,fontSize:8,letterSpacing:.7))),
                 Text(a.fuelRate==0?'БЕЗ РАСХОДА':'ПОД КОНТРОЛЕМ',style:const TextStyle(color:ViperTheme.toxicGreen,fontSize:8,fontWeight:FontWeight.w800)),
               ]),
@@ -184,7 +184,7 @@ class _ToxicLabPageState extends State<ToxicLabPage> with SingleTickerProviderSt
           Row(children:[
             const Text('ИНТЕНСИВНОСТЬ ВИЗУАЛИЗАЦИИ',style:TextStyle(color:ViperTheme.secondaryText,fontSize:8,letterSpacing:.8,fontWeight:FontWeight.w800)),
             const Spacer(),
-            Text('\${(_intensity*100).round()}%',style:const TextStyle(color:ViperTheme.toxicGreen,fontWeight:FontWeight.w900,fontSize:11)),
+            Text('${(_intensity*100).round()}%',style:const TextStyle(color:ViperTheme.toxicGreen,fontWeight:FontWeight.w900,fontSize:11)),
           ]),
           Slider(value:_intensity,onChanged:(v)=>setState(()=>_intensity=v)),
           const SizedBox(height:7),
@@ -205,7 +205,7 @@ class _ToxicLabPageState extends State<ToxicLabPage> with SingleTickerProviderSt
           Row(children:[
             Expanded(child:_StatTile(icon:Icons.rocket_launch_outlined,label:'АКТИВАЦИИ',value:'$_activations')),
             const SizedBox(width:8),
-            Expanded(child:_StatTile(icon:Icons.timer_outlined,label:'ВРЕМЯ РАБОТЫ',value:'\${_activeSeconds.toStringAsFixed(1)}с')),
+            Expanded(child:_StatTile(icon:Icons.timer_outlined,label:'ВРЕМЯ РАБОТЫ',value:'${_activeSeconds.toStringAsFixed(1)}с')),
             const SizedBox(width:8),
             Expanded(child:_StatTile(icon:Icons.power_settings_new,label:'ОТКЛЮЧЕНИЯ',value:'$_deactivations')),
           ]),
