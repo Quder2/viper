@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:viper/pages/full_story_page.dart';
+import 'package:viper/pages/agent_selection_page.dart';
 import 'package:viper/features/viper/toxic_lab/toxic_lab_page.dart';
 import 'package:viper/theme/viper_theme.dart';
 import 'package:viper/widgets/local_video_player_page.dart';
@@ -124,6 +125,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<void> _playSound(String asset) async {
     await _audioPlayer.stop();
     await _audioPlayer.play(AssetSource(asset));
+  }
+
+  void _openAgentSelection() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const AgentSelectionPage()),
+    );
   }
 
   void _openStory() {
@@ -387,21 +394,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: const [
-                      Icon(Icons.shield_moon_outlined,
-                          color: Color(0xFF9BFF83), size: 17),
-                      SizedBox(width: 8),
-                      Text(
-                        'KINGDOM // PERSONNEL FILE',
-                        style: TextStyle(
-                          color: Color(0xFFB8FF9B),
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.7,
+                    children: [
+                      Material(
+                        color: const Color(0xCC102719),
+                        shape: const CircleBorder(
+                          side: BorderSide(color: Color(0x669BFF83)),
+                        ),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: _openAgentSelection,
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(Icons.grid_view_rounded,
+                                color: Color(0xFFB8FF9B), size: 17),
+                          ),
                         ),
                       ),
-                      Spacer(),
-                      _StatusPill(),
+                      const SizedBox(width: 10),
+                      const Icon(Icons.shield_moon_outlined,
+                          color: Color(0xFF9BFF83), size: 17),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'KINGDOM // PERSONNEL FILE',
+                          style: TextStyle(
+                            color: Color(0xFFB8FF9B),
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.7,
+                          ),
+                        ),
+                      ),
+                      const _StatusPill(),
                     ],
                   ),
                   Column(
