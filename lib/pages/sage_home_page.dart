@@ -17,7 +17,7 @@ class SageHomePage extends StatefulWidget {
 
 class _SageHomePageState extends State<SageHomePage> {
   static const _agentId = '569fdd95-4d10-43ab-ca70-79becc718b46';
-  static const _portraitAsset = 'assets/sage/images/portrait.png';
+  static const _portraitAsset = 'assets/sage/images/1.jpg';
   static const _backgroundAsset = 'assets/sage/images/background.png';
   static const _portraitUrl = 'https://media.valorant-api.com/agents/$_agentId/fullportrait.png';
   static const _backgroundUrl = 'https://media.valorant-api.com/agents/$_agentId/background.png';
