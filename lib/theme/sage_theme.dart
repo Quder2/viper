@@ -13,6 +13,21 @@ abstract final class SageTheme {
   static const mutedGreen = Color(0xFF315B6B);
   static const secondaryText = muted;
   static const elevatedSurface = elevated;
+  static const textPrimary = Color(0xFFDBF7FF);
+  static const mutedBright = Color(0xFF7397A5);
+  static const mutedDeep = Color(0xFF557D8A);
+  static const deepSurface = Color(0xFF101812);
+  static const panelGlass = Color(0xD9102532);
+  static const overlayTop = Color(0xAA07131C);
+  static const overlayMid = Color(0x2207131C);
+  static const overlayBottom = Color(0xFF07131C);
+  static const overlayButton = Color(0xCC173746);
+  static const overlayHint = Color(0xCC07131C);
+  static const outlineSoft = Color(0x6670D8E8);
+  static const glowStrong = Color(0x9939B9D3);
+  static const glowMedium = Color(0x8839B9D3);
+  static const glowSoft = Color(0x4439B9D3);
+  static const glowSubtle = Color(0x2239B9D3);
 
   static ThemeData get dark {
     final scheme = ColorScheme.fromSeed(
