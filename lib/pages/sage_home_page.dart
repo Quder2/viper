@@ -242,7 +242,8 @@ class _SageVideoArchiveCard extends StatelessWidget {
           VideoAssetThumbnail(
             videoAsset: ability.videoAsset,
             fallbackAsset: ability.imageAsset,
-            fallback: Image.network(ability.imageUrl, fit: BoxFit.cover),
+            fallback: Image.network(ability.imageUrl, fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => const ColoredBox(color: SageTheme.elevated)),
           ),
           const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(
             begin: Alignment.topCenter, end: Alignment.bottomCenter,
