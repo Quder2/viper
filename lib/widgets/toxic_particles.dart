@@ -9,10 +9,12 @@ class ToxicParticles extends StatefulWidget {
     super.key,
     this.particleCount = 22,
     this.opacity = 0.24,
+    this.color = const Color(0xFF73FF55),
   });
 
   final int particleCount;
   final double opacity;
+  final Color color;
 
   @override
   State<ToxicParticles> createState() => _ToxicParticlesState();
@@ -40,6 +42,7 @@ class _ToxicParticlesState extends State<ToxicParticles>
             animation: _controller,
             particleCount: widget.particleCount,
             opacity: widget.opacity,
+            color: widget.color,
           ),
           child: const SizedBox.expand(),
         ),
@@ -53,11 +56,13 @@ class _ToxicParticlesPainter extends CustomPainter {
     required this.animation,
     required this.particleCount,
     required this.opacity,
+    required this.color,
   }) : super(repaint: animation);
 
   final Animation<double> animation;
   final int particleCount;
   final double opacity;
+  final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -65,7 +70,7 @@ class _ToxicParticlesPainter extends CustomPainter {
 
     final progress = animation.value;
     final paint = Paint()
-      ..color = const Color(0xFF73FF55)
+      ..color = color
       ..blendMode = BlendMode.plus;
 
     for (var i = 0; i < particleCount; i++) {
@@ -80,7 +85,7 @@ class _ToxicParticlesPainter extends CustomPainter {
       final particleOpacity =
           (opacity * pulse).clamp(0.0, 1.0).toDouble();
 
-      paint.color = const Color(0xFF73FF55).withValues(alpha: particleOpacity);
+      paint.color = color.withValues(alpha: particleOpacity);
       canvas.drawCircle(
         Offset((startX + drift) % size.width, size.height - rise),
         radius,
@@ -92,6 +97,7 @@ class _ToxicParticlesPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _ToxicParticlesPainter oldDelegate) {
     return oldDelegate.particleCount != particleCount ||
-        oldDelegate.opacity != opacity;
+        oldDelegate.opacity != opacity ||
+        oldDelegate.color != color;
   }
 }
