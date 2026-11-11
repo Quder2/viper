@@ -287,8 +287,9 @@ class _AbilityCard extends StatelessWidget {
         Container(width: 50, height: 50, decoration: BoxDecoration(
           color: SageTheme.elevated, borderRadius: BorderRadius.circular(14),
           border: Border.all(color: SageTheme.cyan.withValues(alpha: .35)),
-        ), child: Padding(padding: const EdgeInsets.all(7), child: Image.network(ability.image, fit: BoxFit.contain,
-          errorBuilder: (_, _, _) => const Icon(Icons.auto_awesome_rounded, color: SageTheme.ice, size: 24)))),
+        ), child: Padding(padding: const EdgeInsets.all(7), child: Image.asset(ability.imageAsset, fit: BoxFit.contain,
+          errorBuilder: (_, error, stackTrace) => Image.network(ability.imageUrl, fit: BoxFit.contain,
+            errorBuilder: (_, _, _) => const Icon(Icons.auto_awesome_rounded, color: SageTheme.ice, size: 24)))),
         const SizedBox(width: 13),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('${ability.code}  //  ${ability.title}', style: const TextStyle(color: SageTheme.ice, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: .6)),
