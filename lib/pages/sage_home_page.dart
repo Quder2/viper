@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:viper/pages/agent_selection_page.dart';
 import 'package:viper/pages/sage_video_player_page.dart';
+import 'package:viper/pages/sage_story_page.dart';
 import 'package:viper/theme/sage_theme.dart';
 import 'package:viper/widgets/video_asset_thumbnail.dart';
 
@@ -22,31 +23,18 @@ class _SageHomePageState extends State<SageHomePage> {
   static const _abilityBase = 'https://media.valorant-api.com/agents/$_agentId/abilities';
 
   static const _abilities = <_SageAbility>[
-    _SageAbility('C', 'СФЕРА БАРЬЕРА', 'Создаёт прочную ледяную стену, перекрывающую проход и меняющую геометрию боя.', 'assets/sage/abilities/barrier_orb.png', '$_abilityBase/grenade/displayicon.png', 'assets/sage/videos/barrier_orb.mp4'),
-    _SageAbility('Q', 'СФЕРА ЗАМЕДЛЕНИЯ', 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников.', 'assets/sage/abilities/slow_orb.png', '$_abilityBase/ability1/displayicon.png', 'assets/sage/videos/slow_orb.mp4'),
-    _SageAbility('E', 'СФЕРА ЛЕЧЕНИЯ', 'Восстанавливает здоровье себе или раненому союзнику.', 'assets/sage/abilities/healing_orb.png', '$_abilityBase/ability2/displayicon.png', 'assets/sage/videos/healing_orb.mp4'),
-    _SageAbility('X', 'ВОЗРОЖДЕНИЕ', 'Возвращает павшего союзника к жизни. Последний шанс переломить ход раунда.', 'assets/sage/abilities/resurrection.png', '$_abilityBase/ultimate/displayicon.png', 'assets/sage/videos/resurrection.mp4'),
-  ];
-
-  static const _voices = <_SageVoice>[
-    _SageVoice('ПИК АГЕНТА', '«Я могу быть и щитом, и мечом — помните об этом».', 'sage_pick.mp3', 'SagePick.mp3', 'ПЕРЕД НАЧАЛОМ МАТЧА'),
-    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Стена готова».', 'barrier_ready_01.mp3', 'SageBarr1.mp3', 'СФЕРА БАРЬЕРА'),
-    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Стена готова».', 'barrier_ready_02.mp3', 'SageBarr2.mp3', 'СФЕРА БАРЬЕРА'),
-    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Барьер установлен».', 'barrier_ready_03.mp3', 'SageBarr3.mp3', 'СФЕРА БАРЬЕРА'),
-    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Барьер установлен».', 'barrier_ready_04.mp3', 'SageBarr4.mp3', 'СФЕРА БАРЬЕРА'),
+    _SageAbility('C', 'СФЕРА БАРЬЕРА', 'Создаёт прочную ледяную стену, перекрывающую проход и меняющую геометрию боя.', 'assets/sage/abilities/barrier_orb.png', '$_abilityBase/grenade/displayicon.png', 'assets/sage/videos/barrier_orb.mp4', 'C_act.mp3'),
+    _SageAbility('Q', 'СФЕРА ЗАМЕДЛЕНИЯ', 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников.', 'assets/sage/abilities/slow_orb.png', '$_abilityBase/ability1/displayicon.png', 'assets/sage/videos/slow_orb.mp4', 'Q_act.mp3'),
+    _SageAbility('E', 'СФЕРА ЛЕЧЕНИЯ', 'Восстанавливает здоровье себе или раненому союзнику.', 'assets/sage/abilities/healing_orb.png', '$_abilityBase/ability2/displayicon.png', 'assets/sage/videos/healing_orb.mp4', 'E_act.mp3'),
+    _SageAbility('X', 'ВОЗРОЖДЕНИЕ', 'Возвращает павшего союзника к жизни. Последний шанс переломить ход раунда.', 'assets/sage/abilities/resurrection.png', '$_abilityBase/ultimate/displayicon.png', 'assets/sage/videos/resurrection.mp4', 'X_act.mp3'),
   ];
 
   final AudioPlayer _audioPlayer = AudioPlayer();
   String? _playingFile;
-  String? _audioError;
-  StreamSubscription<void>? _audioCompleteSubscription;
 
   @override
   void initState() {
     super.initState();
-    _audioCompleteSubscription = _audioPlayer.onPlayerComplete.listen((_) {
-      if (mounted) setState(() => _playingFile = null);
-    });
   }
 
   @override
@@ -56,25 +44,30 @@ class _SageHomePageState extends State<SageHomePage> {
     super.dispose();
   }
 
-  Future<void> _playVoice(_SageVoice voice) async {
-    final url = 'https://valorant.fandom.com/ru/wiki/Special:Redirect/file/${Uri.encodeComponent(voice.remoteFile)}';
-    try {
-      if (_playingFile == voice.file) {
-        await _audioPlayer.stop();
-        if (mounted) setState(() => _playingFile = null);
-        return;
-      }
+  Future<void> _playAbilitySound(_SageAbility ability) async {
+    final asset = 'sage/voice/${ability.soundAsset}';
+    if (_playingFile == ability.soundAsset) {
       await _audioPlayer.stop();
-      if (mounted) setState(() { _playingFile = voice.file; _audioError = null; });
-      try {
-        await _audioPlayer.play(AssetSource('sage/voice/${voice.file}'));
-      } catch (_) {
-        await _audioPlayer.play(UrlSource(url));
-      }
+      if (mounted) setState(() => _playingFile = null);
+      return;
+    }
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource(asset));
+      if (mounted) setState(() => _playingFile = ability.soundAsset);
     } catch (_) {
       if (!mounted) return;
-      setState(() { _playingFile = null; _audioError = 'Не удалось воспроизвести запись. Добавь MP3 в assets/sage/voice или проверь интернет.'; });
+      setState(() => _playingFile = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Добавь файл assets/sage/voice/${ability.soundAsset}')),
+      );
     }
+  }
+
+  void _openStory() {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => const SageStoryPage(),
+    ));
   }
 
   void _openVideo(_SageAbility ability) {
@@ -162,33 +155,28 @@ class _SageHomePageState extends State<SageHomePage> {
                   ),
                 ),
                 const SizedBox(height: 18),
+                const _SectionTitle(kicker: 'RADIANT LOADOUT', title: 'АРСЕНАЛ'),
+                const SizedBox(height: 14),
                 ..._abilities.map((ability) => Padding(
                   padding: const EdgeInsets.only(bottom: 11),
-                  child: _AbilityCard(ability: ability, onTap: () => _openVideo(ability)),
-                )),
-                const SizedBox(height: 22),
-                const _SectionTitle(kicker: 'VOICE RECORDINGS // RU', title: 'ГОЛОСОВОЙ АРХИВ'),
-                const SizedBox(height: 7),
-                const Text('Русская озвучка. Сейчас подключены найденные и подтверждённые записи с русской страницы архива Sage.',
-                  style: TextStyle(color: SageTheme.muted, fontSize: 11, height: 1.5)),
-                if (_audioError != null) ...[
-                  const SizedBox(height: 10),
-                  Text(_audioError!, style: const TextStyle(color: Color(0xFFFFB4AB), fontSize: 11)),
-                ],
-                const SizedBox(height: 12),
-                ..._voices.map((voice) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _VoiceCard(
-                    voice: voice,
-                    isPlaying: _playingFile == voice.file,
-                    onTap: () => _playVoice(voice),
+                  child: _AbilityCard(
+                    ability: ability,
+                    isPlaying: _playingFile == ability.soundAsset,
+                    onSound: () => _playAbilitySound(ability),
+                    onTap: () => _openVideo(ability),
                   ),
                 )),
-                const SizedBox(height: 10),
-                const _QuoteCard(
-                  quote: '«Я могу быть и щитом, и мечом — помните об этом».',
-                  attribution: 'SAGE // ФРАЗА ПРИ ВЫБОРЕ АГЕНТА',
-                ),
+                const SizedBox(height: 22),
+                SizedBox(width: double.infinity, child: OutlinedButton.icon(
+                  onPressed: _openStory,
+                  icon: const Icon(Icons.folder_special_outlined),
+                  label: const Text('ПОЛНОЕ ДОСЬЕ АГЕНТА'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: SageTheme.ice,
+                    side: BorderSide(color: SageTheme.cyan.withValues(alpha: .5)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                )),
                 const SizedBox(height: 24),
                 SizedBox(width: double.infinity, child: OutlinedButton.icon(
                   onPressed: () => Navigator.of(context).pushReplacement(
@@ -214,15 +202,9 @@ class _SageHomePageState extends State<SageHomePage> {
 }
 
 class _SageAbility {
-  const _SageAbility(this.code, this.title, this.description, this.imageAsset, this.imageUrl, this.videoAsset);
-  final String code, title, description, imageAsset, imageUrl, videoAsset;
+  const _SageAbility(this.code, this.title, this.description, this.imageAsset, this.imageUrl, this.videoAsset, this.soundAsset);
+  final String code, title, description, imageAsset, imageUrl, videoAsset, soundAsset;
 }
-
-class _SageVoice {
-  const _SageVoice(this.title, this.quote, this.file, this.remoteFile, this.group);
-  final String title, quote, file, remoteFile, group;
-}
-
 
 class _SageVideoArchiveCard extends StatelessWidget {
   const _SageVideoArchiveCard({required this.ability, required this.onTap});
@@ -270,8 +252,10 @@ class _SageVideoArchiveCard extends StatelessWidget {
 }
 
 class _AbilityCard extends StatelessWidget {
-  const _AbilityCard({required this.ability, required this.onTap});
+  const _AbilityCard({required this.ability, required this.isPlaying, required this.onSound, required this.onTap});
   final _SageAbility ability;
+  final bool isPlaying;
+  final VoidCallback onSound;
   final VoidCallback onTap;
 
   @override
@@ -293,10 +277,17 @@ class _AbilityCard extends StatelessWidget {
             errorBuilder: (_, _, _) => const Icon(Icons.auto_awesome_rounded, color: SageTheme.ice, size: 24))))),
         const SizedBox(width: 13),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${ability.code}  //  ${ability.title}', style: const TextStyle(color: SageTheme.ice, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: .6)),
+          Text('SAGE // ${ability.code}', style: const TextStyle(color: SageTheme.cyan, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+          const SizedBox(height: 3),
+          Text(ability.title, style: const TextStyle(color: SageTheme.ice, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: .6)),
           const SizedBox(height: 6),
           Text(ability.description, style: const TextStyle(color: SageTheme.muted, fontSize: 11, height: 1.45)),
         ])),
+        IconButton(
+          tooltip: 'Прослушать звук способности',
+          onPressed: onSound,
+          icon: Icon(isPlaying ? Icons.stop_circle_outlined : Icons.volume_up_rounded, color: SageTheme.cyan),
+        ),
       ]),
       const SizedBox(height: 13),
       SizedBox(width: double.infinity, child: OutlinedButton.icon(
@@ -312,38 +303,6 @@ class _AbilityCard extends StatelessWidget {
         ),
       )),
     ]),
-  );
-}
-
-class _VoiceCard extends StatelessWidget {
-  const _VoiceCard({required this.voice, required this.isPlaying, required this.onTap});
-  final _SageVoice voice;
-  final bool isPlaying;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Material(
-    color: SageTheme.surface,
-    borderRadius: BorderRadius.circular(14),
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12), child: Row(children: [
-        Container(width: 38, height: 38, decoration: BoxDecoration(
-          color: SageTheme.elevated, shape: BoxShape.circle,
-          border: Border.all(color: SageTheme.cyan.withValues(alpha: .35)),
-        ), child: Icon(isPlaying ? Icons.stop_rounded : Icons.play_arrow_rounded, color: SageTheme.ice)),
-        const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(voice.title, style: const TextStyle(color: SageTheme.ice, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: .6)),
-          const SizedBox(height: 4),
-          Text(voice.quote, style: const TextStyle(color: SageTheme.muted, fontSize: 11, height: 1.35)),
-          const SizedBox(height: 4),
-          Text(voice.group, style: const TextStyle(color: SageTheme.cyan, fontSize: 8, letterSpacing: 1)),
-        ])),
-        Icon(isPlaying ? Icons.graphic_eq_rounded : Icons.headphones_rounded, color: SageTheme.cyan, size: 18),
-      ])),
-    ),
   );
 }
 
@@ -443,20 +402,3 @@ class _InfoChip extends StatelessWidget {
   );
 }
 
-class _QuoteCard extends StatelessWidget {
-  const _QuoteCard({required this.quote, required this.attribution});
-  final String quote, attribution;
-  @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(18),
-    decoration: BoxDecoration(color: SageTheme.surface, borderRadius: BorderRadius.circular(17), border: Border.all(color: SageTheme.cyan.withValues(alpha: .22))),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Icon(Icons.format_quote_rounded, color: SageTheme.cyan, size: 25),
-      const SizedBox(height: 8),
-      Text(quote, style: const TextStyle(color: SageTheme.ice, fontSize: 13, height: 1.55, fontStyle: FontStyle.italic)),
-      const SizedBox(height: 12),
-      Text(attribution, style: const TextStyle(color: SageTheme.muted, fontSize: 8, letterSpacing: 1.2, fontWeight: FontWeight.w800)),
-    ]),
-  );
-}
