@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:viper/pages/agent_selection_page.dart';
 import 'package:viper/pages/sage_video_player_page.dart';
 import 'package:viper/theme/sage_theme.dart';
+import 'package:viper/widgets/video_asset_thumbnail.dart';
 
 class SageHomePage extends StatefulWidget {
   const SageHomePage({super.key});
@@ -14,24 +15,25 @@ class SageHomePage extends StatefulWidget {
 
 class _SageHomePageState extends State<SageHomePage> {
   static const _agentId = '569fdd95-4d10-43ab-ca70-79becc718b46';
-  static const _portrait = 'https://media.valorant-api.com/agents/$_agentId/fullportrait.png';
-  static const _background = 'https://media.valorant-api.com/agents/$_agentId/background.png';
+  static const _portraitAsset = 'assets/sage/images/portrait.png';
+  static const _backgroundAsset = 'assets/sage/images/background.png';
+  static const _portraitUrl = 'https://media.valorant-api.com/agents/$_agentId/fullportrait.png';
+  static const _backgroundUrl = 'https://media.valorant-api.com/agents/$_agentId/background.png';
   static const _abilityBase = 'https://media.valorant-api.com/agents/$_agentId/abilities';
-  static const _videoBase = 'https://cmsassets.rgpub.io/sanity/files/dsfx7636/game_data/';
 
   static const _abilities = <_SageAbility>[
-    _SageAbility('C', 'СФЕРА БАРЬЕРА', 'Создаёт прочную ледяную стену, перекрывающую проход и меняющую геометрию боя.', '$_abilityBase/grenade/displayicon.png', '${_videoBase}a247d196383136d3de15b4d6d9c816e3c8054ba0.mp4'),
-    _SageAbility('Q', 'СФЕРА ЗАМЕДЛЕНИЯ', 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников.', '$_abilityBase/ability1/displayicon.png', '${_videoBase}df83929ed5da349c37a5bf4600c2b55010c72402.mp4'),
-    _SageAbility('E', 'СФЕРА ЛЕЧЕНИЯ', 'Восстанавливает здоровье себе или раненому союзнику.', '$_abilityBase/ability2/displayicon.png', '${_videoBase}45053483528b96cbe003ac39e6b53c9866d5fea6.mp4'),
-    _SageAbility('X', 'ВОЗРОЖДЕНИЕ', 'Возвращает павшего союзника к жизни. Последний шанс переломить ход раунда.', '$_abilityBase/ultimate/displayicon.png', '${_videoBase}a79b1d6838cee5572b428babd74a2db0c07f4ea5.mp4'),
+    _SageAbility('C', 'СФЕРА БАРЬЕРА', 'Создаёт прочную ледяную стену, перекрывающую проход и меняющую геометрию боя.', 'assets/sage/abilities/barrier_orb.png', '$_abilityBase/grenade/displayicon.png', 'assets/sage/videos/barrier_orb.mp4'),
+    _SageAbility('Q', 'СФЕРА ЗАМЕДЛЕНИЯ', 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников.', 'assets/sage/abilities/slow_orb.png', '$_abilityBase/ability1/displayicon.png', 'assets/sage/videos/slow_orb.mp4'),
+    _SageAbility('E', 'СФЕРА ЛЕЧЕНИЯ', 'Восстанавливает здоровье себе или раненому союзнику.', 'assets/sage/abilities/healing_orb.png', '$_abilityBase/ability2/displayicon.png', 'assets/sage/videos/healing_orb.mp4'),
+    _SageAbility('X', 'ВОЗРОЖДЕНИЕ', 'Возвращает павшего союзника к жизни. Последний шанс переломить ход раунда.', 'assets/sage/abilities/resurrection.png', '$_abilityBase/ultimate/displayicon.png', 'assets/sage/videos/resurrection.mp4'),
   ];
 
   static const _voices = <_SageVoice>[
-    _SageVoice('ПИК АГЕНТА', '«Я могу быть и щитом, и мечом — помните об этом».', 'SagePick.mp3', 'ПЕРЕД НАЧАЛОМ МАТЧА'),
-    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Стена готова».', 'SageBarr1.mp3', 'СФЕРА БАРЬЕРА'),
-    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Стена готова».', 'SageBarr2.mp3', 'СФЕРА БАРЬЕРА'),
-    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Барьер установлен».', 'SageBarr3.mp3', 'СФЕРА БАРЬЕРА'),
-    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Барьер установлен».', 'SageBarr4.mp3', 'СФЕРА БАРЬЕРА'),
+    _SageVoice('ПИК АГЕНТА', '«Я могу быть и щитом, и мечом — помните об этом».', 'sage_pick.mp3', 'SagePick.mp3', 'ПЕРЕД НАЧАЛОМ МАТЧА'),
+    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Стена готова».', 'barrier_ready_01.mp3', 'SageBarr1.mp3', 'СФЕРА БАРЬЕРА'),
+    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Стена готова».', 'barrier_ready_02.mp3', 'SageBarr2.mp3', 'СФЕРА БАРЬЕРА'),
+    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Барьер установлен».', 'barrier_ready_03.mp3', 'SageBarr3.mp3', 'СФЕРА БАРЬЕРА'),
+    _SageVoice('БАРЬЕР УСТАНОВЛЕН', '«Барьер установлен».', 'barrier_ready_04.mp3', 'SageBarr4.mp3', 'СФЕРА БАРЬЕРА'),
   ];
 
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -55,7 +57,7 @@ class _SageHomePageState extends State<SageHomePage> {
   }
 
   Future<void> _playVoice(_SageVoice voice) async {
-    final url = 'https://valorant.fandom.com/ru/wiki/Special:Redirect/file/${Uri.encodeComponent(voice.file)}';
+    final url = 'https://valorant.fandom.com/ru/wiki/Special:Redirect/file/${Uri.encodeComponent(voice.remoteFile)}';
     try {
       if (_playingFile == voice.file) {
         await _audioPlayer.stop();
@@ -64,16 +66,20 @@ class _SageHomePageState extends State<SageHomePage> {
       }
       await _audioPlayer.stop();
       if (mounted) setState(() { _playingFile = voice.file; _audioError = null; });
-      await _audioPlayer.play(UrlSource(url));
+      try {
+        await _audioPlayer.play(AssetSource('sage/voice/${voice.file}'));
+      } catch (_) {
+        await _audioPlayer.play(UrlSource(url));
+      }
     } catch (_) {
       if (!mounted) return;
-      setState(() { _playingFile = null; _audioError = 'Не удалось загрузить аудио. Проверь подключение или открой источник в браузере.'; });
+      setState(() { _playingFile = null; _audioError = 'Не удалось воспроизвести запись. Добавь MP3 в assets/sage/voice или проверь интернет.'; });
     }
   }
 
   void _openVideo(_SageAbility ability) {
     Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => SageVideoPlayerPage(title: ability.title, videoUrl: ability.videoUrl, code: ability.code),
+      builder: (_) => SageVideoPlayerPage(title: ability.title, assetPath: ability.videoAsset, code: ability.code),
     ));
   }
 
@@ -89,10 +95,12 @@ class _SageHomePageState extends State<SageHomePage> {
             SliverToBoxAdapter(child: SizedBox(
               height: 440,
               child: Stack(fit: StackFit.expand, children: [
-                Image.network(_background, fit: BoxFit.cover, alignment: Alignment.topCenter,
-                  errorBuilder: (_, _, _) => const ColoredBox(color: Color(0xFF102B3A))),
-                Image.network(_portrait, fit: BoxFit.contain, alignment: Alignment.bottomRight,
-                  errorBuilder: (_, _, _) => const SizedBox.shrink()),
+                Image.asset(_backgroundAsset, fit: BoxFit.cover, alignment: Alignment.topCenter,
+                  errorBuilder: (_, error, stackTrace) => Image.network(_backgroundUrl, fit: BoxFit.cover, alignment: Alignment.topCenter,
+                    errorBuilder: (_, _, _) => const ColoredBox(color: Color(0xFF102B3A)))),
+                Image.asset(_portraitAsset, fit: BoxFit.contain, alignment: Alignment.bottomRight,
+                  errorBuilder: (_, error, stackTrace) => Image.network(_portraitUrl, fit: BoxFit.contain, alignment: Alignment.bottomRight,
+                    errorBuilder: (_, _, _) => const SizedBox.shrink())),
                 const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(
                   begin: Alignment.topCenter, end: Alignment.bottomCenter,
                   colors: [Color(0x5507131C), Color(0x2207131C), Color(0xFF07131C)],
@@ -141,6 +149,19 @@ class _SageHomePageState extends State<SageHomePage> {
                 const Text('Официальные видеоролики способностей с CDN Riot Games. Нажми на карточку, чтобы открыть плеер.',
                   style: TextStyle(color: SageTheme.muted, fontSize: 11, height: 1.5)),
                 const SizedBox(height: 14),
+                SizedBox(
+                  height: 158,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _abilities.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 11),
+                    itemBuilder: (context, index) => _SageVideoArchiveCard(
+                      ability: _abilities[index],
+                      onTap: () => _openVideo(_abilities[index]),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
                 ..._abilities.map((ability) => Padding(
                   padding: const EdgeInsets.only(bottom: 11),
                   child: _AbilityCard(ability: ability, onTap: () => _openVideo(ability)),
@@ -193,13 +214,58 @@ class _SageHomePageState extends State<SageHomePage> {
 }
 
 class _SageAbility {
-  const _SageAbility(this.code, this.title, this.description, this.image, this.videoUrl);
-  final String code, title, description, image, videoUrl;
+  const _SageAbility(this.code, this.title, this.description, this.imageAsset, this.imageUrl, this.videoAsset);
+  final String code, title, description, imageAsset, imageUrl, videoAsset;
 }
 
 class _SageVoice {
-  const _SageVoice(this.title, this.quote, this.file, this.group);
-  final String title, quote, file, group;
+  const _SageVoice(this.title, this.quote, this.file, this.remoteFile, this.group);
+  final String title, quote, file, remoteFile, group;
+}
+
+
+class _SageVideoArchiveCard extends StatelessWidget {
+  const _SageVideoArchiveCard({required this.ability, required this.onTap});
+  final _SageAbility ability;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 238,
+    child: Material(
+      color: SageTheme.surface,
+      borderRadius: BorderRadius.circular(17),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Stack(fit: StackFit.expand, children: [
+          VideoAssetThumbnail(
+            videoAsset: ability.videoAsset,
+            fallbackAsset: ability.imageAsset,
+            fallback: Image.network(ability.imageUrl, fit: BoxFit.cover),
+          ),
+          const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(
+            begin: Alignment.topCenter, end: Alignment.bottomCenter,
+            colors: [Color(0x2207131C), Color(0xEE07131C)],
+          ))),
+          Positioned(top: 10, left: 11, child: _Eyebrow('SAGE // ${ability.code}')),
+          const Center(child: DecoratedBox(
+            decoration: BoxDecoration(shape: BoxShape.circle, color: Color(0xAA102532),
+              border: Border.fromBorderSide(BorderSide(color: SageTheme.ice, width: 1.3))),
+            child: Padding(padding: EdgeInsets.all(10),
+              child: Icon(Icons.play_arrow_rounded, color: SageTheme.ice, size: 28)),
+          )),
+          Positioned(left: 12, right: 12, bottom: 11, child: Text(
+            ability.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: SageTheme.ice, fontSize: 10,
+              fontWeight: FontWeight.w900, letterSpacing: .7),
+          )),
+        ]),
+      ),
+    ),
+  );
 }
 
 class _AbilityCard extends StatelessWidget {
