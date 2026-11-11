@@ -159,7 +159,7 @@ class _FullStoryPageState extends State<FullStoryPage> with TickerProviderStateM
                 child: AnimatedBuilder(
                   animation: _tiltSmoothing,
                   child: Image.asset(
-                    'assets/images/1.png',
+                    'assets/viper/images/1.png',
                     fit: BoxFit.cover,
                     alignment: Alignment.topCenter,
                   ),
