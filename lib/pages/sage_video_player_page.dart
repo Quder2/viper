@@ -464,7 +464,6 @@ class _ToxicGlow extends CustomPainter {
 class _VideoMissingMessage extends StatelessWidget {
   const _VideoMissingMessage({required this.assetPath});
   final String assetPath;
-  final String code;
   @override
   Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, children: [
     const Icon(Icons.movie_outlined, size: 56, color: SageTheme.cyan),
