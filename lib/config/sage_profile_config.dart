@@ -1,4 +1,5 @@
 import 'package:viper/models/agent_ability_data.dart';
+import 'package:viper/models/agent_profile_config.dart';
 
 /// Sage-specific content. New agents should get their own profile config
 /// and palette; the profile page layout/effects can stay unchanged.
@@ -57,4 +58,22 @@ abstract final class SageProfileConfig {
       preview: heroImage,
     ),
   ];
+
+  static const profile = AgentProfileConfig(
+    name: name,
+    agentCode: agentCode,
+    heroImage: heroImage,
+    headerLabel: headerLabel,
+    quote: quote,
+    headline: headline,
+    description: description,
+    role: role,
+    difficulty: difficulty,
+    loadoutKicker: loadoutKicker,
+    footageKicker: footageKicker,
+    footageDescription: footageDescription,
+    footer: footer,
+    abilities: abilities,
+  );
+
 }
