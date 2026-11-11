@@ -72,7 +72,8 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> {
     final c = _controller;
     if (c == null) return;
     final ms = (c.value.position + delta).inMilliseconds
-        .clamp(0, c.value.duration.inMilliseconds);
+        .clamp(0, c.value.duration.inMilliseconds)
+        .toInt();
     await c.seekTo(Duration(milliseconds: ms));
   }
 
@@ -135,7 +136,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> {
   );
 
   Widget _portraitPlayer(VideoPlayerController c, VideoPlayerValue v) {
-    final max = v.duration.inMilliseconds.toDouble().clamp(1, double.infinity);
+    final max = v.duration.inMilliseconds.toDouble().clamp(1.0, double.infinity).toDouble();
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 30),
       children: [
@@ -224,7 +225,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> {
     Expanded(child: Slider(
       min: 0,
       max: max,
-      value: (_seeking ? _seekMs : v.position.inMilliseconds.toDouble()).clamp(0, max),
+      value: (_seeking ? _seekMs : v.position.inMilliseconds.toDouble()).clamp(0.0, max).toDouble(),
       activeColor: SageTheme.cyan,
       inactiveColor: SageTheme.elevated,
       onChangeStart: (x) => setState(() { _seeking = true; _seekMs = x; }),
