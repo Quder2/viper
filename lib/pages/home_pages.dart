@@ -23,6 +23,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late final AnimationController _heroMotion;
   late final AnimationController _heroPulse;
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
+  late final AnimationController _tiltSmoothing;
+  double _targetTiltX = 0;
+  double _targetTiltY = 0;
   double _tiltX = 0;
   double _tiltY = 0;
 
@@ -80,6 +83,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           _heroPulse.reverse();
         }
       });
+    // Sensor readings update targets; visual movement is interpolated on Flutter frames.
+    _tiltSmoothing = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 16),
+    )
+      ..addListener(_smoothDeviceTilt)
+      ..repeat();
     _accelerometerSubscription = accelerometerEventStream().listen(
       _handleDeviceTilt,
       onError: (_) {},
@@ -87,12 +97,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _handleDeviceTilt(AccelerometerEvent event) {
+    _targetTiltX = (event.z / 9.8).clamp(-1.0, 1.0).toDouble();
+    _targetTiltY = (event.x / 9.8).clamp(-1.0, 1.0).toDouble();
+  }
+
+  void _smoothDeviceTilt() {
     if (!mounted) return;
-    final nextX = (event.z / 9.8).clamp(-1.0, 1.0).toDouble();
-    final nextY = (event.x / 9.8).clamp(-1.0, 1.0).toDouble();
+    // A small per-frame interpolation removes sensor jitter without adding lag.
+    const smoothing = .085;
+    final nextX = _tiltX + (_targetTiltX - _tiltX) * smoothing;
+    final nextY = _tiltY + (_targetTiltY - _tiltY) * smoothing;
+    if ((nextX - _tiltX).abs() < .0005 &&
+        (nextY - _tiltY).abs() < .0005) {
+      return;
+    }
     setState(() {
-      _tiltX = _tiltX * .68 + nextX * .32;
-      _tiltY = _tiltY * .68 + nextY * .32;
+      _tiltX = nextX;
+      _tiltY = nextY;
     });
   }
 
@@ -131,6 +152,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _accelerometerSubscription?.cancel();
+    _tiltSmoothing.dispose();
     _heroMotion.dispose();
     _heroPulse.dispose();
     _audioPlayer.dispose();
