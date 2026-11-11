@@ -6,7 +6,7 @@ class AgentSelectionPage extends StatelessWidget {
   const AgentSelectionPage({super.key});
 
   static const _sagePortrait =
-      'https://media.valorant-api.com/agents/5f8d3a7f-467b-97f3-062c-13acf203c006/fullportrait.png';
+      'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/fullportrait.png';
 
   @override
   Widget build(BuildContext context) {
