@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:viper/pages/agent_selection_page.dart';
@@ -36,9 +37,19 @@ class _SageHomePageState extends State<SageHomePage> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   String? _playingFile;
   String? _audioError;
+  StreamSubscription<void>? _audioCompleteSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioCompleteSubscription = _audioPlayer.onPlayerComplete.listen((_) {
+      if (mounted) setState(() => _playingFile = null);
+    });
+  }
 
   @override
   void dispose() {
+    _audioCompleteSubscription?.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
