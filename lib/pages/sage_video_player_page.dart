@@ -4,9 +4,9 @@ import 'package:video_player/video_player.dart';
 import 'package:viper/theme/sage_theme.dart';
 
 class SageVideoPlayerPage extends StatefulWidget {
-  const SageVideoPlayerPage({super.key, required this.title, required this.videoUrl, required this.code});
+  const SageVideoPlayerPage({super.key, required this.title, required this.assetPath, required this.code});
   final String title;
-  final String videoUrl;
+  final String assetPath;
   final String code;
 
   @override
@@ -31,7 +31,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> {
   }
 
   Future<void> _init() async {
-    final controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    final controller = VideoPlayerController.asset(widget.assetPath);
     _controller = controller;
     controller.addListener(_changed);
     try {
@@ -276,11 +276,11 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> {
     child: Padding(
       padding: const EdgeInsets.all(28),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Icon(Icons.cloud_off_rounded, color: SageTheme.cyan, size: 52),
+        const Icon(Icons.video_library_outlined, color: SageTheme.cyan, size: 52),
         const SizedBox(height: 14),
         const Text('Видеозапись недоступна', style: TextStyle(color: SageTheme.ice, fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        const Text('Проверь подключение к интернету. Источник видео находится на CDN Riot Games.', textAlign: TextAlign.center, style: TextStyle(color: SageTheme.muted, height: 1.5)),
+        const Text('Локальный MP4 пока не найден. Добавь файл по указанному пути в assets/sage/videos и пересобери приложение.', textAlign: TextAlign.center, style: TextStyle(color: SageTheme.muted, height: 1.5)),
         const SizedBox(height: 12),
         TextButton(onPressed: () { setState(() { _loading = true; _error = null; }); _init(); }, child: const Text('ПОВТОРИТЬ')),
       ]),
