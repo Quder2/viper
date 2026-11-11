@@ -1,11 +1,10 @@
-# Sage voice lines
+# Sage ability voice placeholders
 
-Expected Russian MP3 files:
+The Sage dossier uses the same inline sound control as Viper: each ability card has a speaker button. Add one short MP3 for each ability:
 
-- `sage_pick.mp3` — реплика выбора агента (source: SagePick.mp3)
-- `barrier_ready_01.mp3` — «Стена готова» (source: SageBarr1.mp3)
-- `barrier_ready_02.mp3` — «Стена готова» (source: SageBarr2.mp3)
-- `barrier_ready_03.mp3` — «Барьер установлен» (source: SageBarr3.mp3)
-- `barrier_ready_04.mp3` — «Барьер установлен» (source: SageBarr4.mp3)
+- `C_act.mp3` — Barrier Orb activation
+- `Q_act.mp3` — Slow Orb activation
+- `E_act.mp3` — Healing Orb activation
+- `X_act.mp3` — Resurrection activation
 
-The app first tries these local files and falls back to the existing archive URL if a local file has not been added yet.
+Place the files in this folder. The app loads them as `AssetSource('sage/voice/<filename>')`. These are local placeholder filenames for the selected clips; the app no longer shows a separate voice archive.
