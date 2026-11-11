@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:viper/pages/agent_selection_page.dart';
 import 'package:viper/pages/sage_video_player_page.dart';
 import 'package:viper/pages/sage_story_page.dart';
+import 'package:viper/pages/sage_training_page.dart';
 import 'package:viper/theme/sage_theme.dart';
 import 'package:viper/widgets/video_asset_thumbnail.dart';
 
@@ -67,6 +68,12 @@ class _SageHomePageState extends State<SageHomePage> {
         SnackBar(content: Text('Добавь файл assets/sage/voice/${ability.soundAsset}')),
       );
     }
+  }
+
+  void _openTraining() {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => const SageTrainingPage(),
+    ));
   }
 
   void _openStory() {
@@ -172,6 +179,17 @@ class _SageHomePageState extends State<SageHomePage> {
                 ),
                 const SizedBox(height: 18),
                 const SizedBox(height: 22),
+                SizedBox(width: double.infinity, child: OutlinedButton.icon(
+                  onPressed: _openTraining,
+                  icon: const Icon(Icons.ac_unit_rounded),
+                  label: const Text('RADIANT LAB // ТРЕНИРОВОЧНЫЙ ПОЛИГОН'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: SageTheme.ice,
+                    side: BorderSide(color: SageTheme.cyan.withValues(alpha: .5)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                )),
+                const SizedBox(height: 12),
                 SizedBox(width: double.infinity, child: OutlinedButton.icon(
                   onPressed: _openStory,
                   icon: const Icon(Icons.folder_special_outlined),
