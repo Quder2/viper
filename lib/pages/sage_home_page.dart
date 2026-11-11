@@ -5,6 +5,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:viper/pages/sage_story_page.dart';
+import 'package:viper/config/sage_profile_config.dart';
+import 'package:viper/models/agent_ability_data.dart';
 import 'package:viper/pages/agent_selection_page.dart';
 
 import 'package:viper/theme/sage_theme.dart';
@@ -30,44 +32,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
   double _tiltX = 0;
   double _tiltY = 0;
 
-  static const _abilities = <_AbilityData>[
-    _AbilityData(
-      code: 'C',
-      title: 'Сфера барьера',
-      image: 'assets/sage/abilities/barrier_orb.png',
-      sound: 'sage/voice/C_act.mp3',
-      description: 'Создаёт прочную ледяную стену, перекрывающую проход и меняющую геометрию боя. Используй её, чтобы закрыть опасное направление или поднять союзника на неожиданную позицию.',
-      video: 'assets/sage/videos/barrier_orb.mp4',
-      preview: 'assets/sage/images/1.jpg',
-    ),
-    _AbilityData(
-      code: 'Q',
-      title: 'Сфера замедления',
-      image: 'assets/sage/abilities/slow_orb.png',
-      sound: 'sage/voice/Q_act.mp3',
-      description: 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников. Осколки выдают движение врагов.',
-      video: 'assets/sage/videos/slow_orb.mp4',
-      preview: 'assets/sage/images/1.jpg',
-    ),
-    _AbilityData(
-      code: 'E',
-      title: 'Сфера лечения',
-      image: 'assets/sage/abilities/healing_orb.png',
-      sound: 'sage/voice/E_act.mp3',
-      description: 'Восстанавливает здоровье себе или раненому союзнику. Выбери цель и верни её в бой.',
-      video: 'assets/sage/videos/healing_orb.mp4',
-      preview: 'assets/sage/images/1.jpg',
-    ),
-    _AbilityData(
-      code: 'ULT',
-      title: 'Воскрешение',
-      image: 'assets/sage/abilities/resurrection.png',
-      sound: 'sage/voice/X_act.mp3',
-      description: 'Возвращает павшего союзника к жизни. Последний шанс переломить ход раунда.',
-      video: 'assets/sage/videos/resurrection.mp4',
-      preview: 'assets/sage/images/1.jpg',
-    ),
-  ];
+
 
   @override
   void initState() {
@@ -139,7 +104,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
     );
   }
 
-  void _openVideo(_AbilityData ability) {
+  void _openVideo(AgentAbilityData ability) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => SageVideoPlayerPage(
@@ -182,7 +147,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const _ArchiveLabel('AGENT DOSSIER  //  CLASSIFIED'),
                       const SizedBox(height: 12),
                       const Text(
-                        'СПОКОЙСТВИЕ.\nЗАЩИТА.\nВОЗРОЖДЕНИЕ.',
+                        SageProfileConfig.headline,
                         style: TextStyle(
                           color: SageTheme.textPrimary,
                           fontSize: 27,
@@ -193,7 +158,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       ),
                       const SizedBox(height: 14),
                       const Text(
-                        'Химик из США Sage устанавливает контроль над полем боя с помощью источающих токсичный газ устройств и ограничивает обзор противникам. А тех, кого ей не удастся отравить, она непременно перехитрит.',
+                        SageProfileConfig.description,
                         style: TextStyle(
                           color: SageTheme.muted,
                           height: 1.55,
@@ -203,18 +168,18 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const SizedBox(height: 22),
                       const Row(
                         children: [
-                          _DataChip(icon: Icons.shield_outlined, label: 'СТРАЖ'),
+                          _DataChip(icon: Icons.shield_outlined, label: SageProfileConfig.role),
                           SizedBox(width: 8),
-                          _DataChip(icon: Icons.signal_cellular_alt, label: 'СЛОЖНОСТЬ  2/3'),
+                          _DataChip(icon: Icons.signal_cellular_alt, label: SageProfileConfig.difficulty),
                         ],
                       ),
                       const SizedBox(height: 30),
                       const _SectionHeading(
-                        eyebrow: 'RADIANT LOADOUT',
+                        eyebrow: SageProfileConfig.loadoutKicker,
                         title: 'АРСЕНАЛ',
                       ),
                       const SizedBox(height: 14),
-                      ..._abilities.map(
+                      ...SageProfileConfig.abilities.map(
                         (ability) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _AbilityPanel(
@@ -226,12 +191,12 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       ),
                       const SizedBox(height: 22),
                       const _SectionHeading(
-                        eyebrow: 'RADIANT FOOTAGE',
+                        eyebrow: SageProfileConfig.footageKicker,
                         title: 'ВИДЕОАРХИВ',
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        'Записи способностей • локальные материалы',
+                        SageProfileConfig.footageDescription,
                         style: TextStyle(
                           color: SageTheme.mutedBright,
                           fontSize: 11,
@@ -243,10 +208,10 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                         height: 184,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: _abilities.length,
+                          itemCount: SageProfileConfig.abilities.length,
                           separatorBuilder: (_, _) => const SizedBox(width: 12),
                           itemBuilder: (context, index) {
-                            final ability = _abilities[index];
+                            final ability = SageProfileConfig.abilities[index];
                             return _VideoArchiveCard(
                               ability: ability,
                               onTap: () => _openVideo(ability),
@@ -259,7 +224,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const SizedBox(height: 24),
                       const Center(
                         child: Text(
-                          'SAGE // RADIANT ARCHIVE  •  END OF FILE',
+                          SageProfileConfig.footer,
                           style: TextStyle(
                             color: SageTheme.mutedDeep,
                             fontSize: 8,
@@ -310,7 +275,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
               );
             },
             child: Image.asset(
-              'assets/sage/images/1.jpg',
+              SageProfileConfig.heroImage,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
             ),
@@ -409,7 +374,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const SizedBox(width: 8),
                       const Expanded(
                         child: Text(
-                          'PROTOCOL // PERSONNEL FILE',
+                          SageProfileConfig.headerLabel,
                           style: TextStyle(
                             color: SageTheme.ice,
                             fontSize: 9,
@@ -425,7 +390,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text(
-                        'AGENT  S-07',
+                        'AGENT  ${SageProfileConfig.agentCode}',
                         style: TextStyle(
                           color: SageTheme.cyan,
                           fontSize: 10,
@@ -435,7 +400,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       ),
                       SizedBox(height: 5),
                       Text(
-                        'SAGE',
+                        SageProfileConfig.name,
                         style: TextStyle(
                           color: SageTheme.textPrimary,
                           fontSize: 54,
@@ -449,7 +414,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       ),
                       SizedBox(height: 10),
                       Text(
-                        '«ТВОЯ ОБЯЗАННОСТЬ ЕЩЁ НЕ ВЫПОЛНЕНА.»',
+                        SageProfileConfig.quote,
                         style: TextStyle(
                           color: SageTheme.ice,
                           fontSize: 10,
@@ -511,26 +476,6 @@ class _TiltHint extends StatelessWidget {
       ),
     );
   }
-}
-
-class _AbilityData {
-  const _AbilityData({
-    required this.code,
-    required this.title,
-    required this.image,
-    required this.sound,
-    required this.description,
-    required this.video,
-    required this.preview,
-  });
-
-  final String code;
-  final String title;
-  final String image;
-  final String sound;
-  final String description;
-  final String video;
-  final String preview;
 }
 
 class _ArchiveLabel extends StatelessWidget {
@@ -666,7 +611,7 @@ class _AbilityPanel extends StatelessWidget {
     required this.onVideo,
   });
 
-  final _AbilityData ability;
+  final AgentAbilityData ability;
   final VoidCallback onSound;
   final VoidCallback onVideo;
 
@@ -703,7 +648,7 @@ class _AbilityPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'SAGE // ${ability.code}',
+                        '${SageProfileConfig.name} // ${ability.code}',
                         style: const TextStyle(
                           color: SageTheme.cyan,
                           fontSize: 8,
@@ -777,7 +722,7 @@ int _previewTimeForAbility(String code) => switch (code) {
 
 class _VideoArchiveCard extends StatelessWidget {
   const _VideoArchiveCard({required this.ability, required this.onTap});
-  final _AbilityData ability;
+  final AgentAbilityData ability;
   final VoidCallback onTap;
 
   @override
@@ -817,7 +762,7 @@ class _VideoArchiveCard extends StatelessWidget {
                       border: Border.all(color: const SageTheme.cyan.withValues(alpha: .55)),
                     ),
                     child: Text(
-                      'SAGE // ${ability.code}',
+                      '${SageProfileConfig.name} // ${ability.code}',
                       style: const TextStyle(
                         color: SageTheme.ice,
                         fontSize: 8,
