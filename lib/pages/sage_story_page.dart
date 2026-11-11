@@ -70,7 +70,7 @@ class _SageStoryPageState extends State<SageStoryPage>
               slivers: [
                 SliverToBoxAdapter(child: _buildHero()),
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(18, 24, 18, 36),
+                  padding: const EdgeInsets.fromLTRB(18, 14, 18, 36),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       const _ArchiveEyebrow(),
@@ -146,11 +146,11 @@ class _SageStoryPageState extends State<SageStoryPage>
             animation: _ambient,
             builder: (context, child) => Transform.translate(
               offset: Offset(
-                math.sin(_ambient.value * math.pi) * 8,
-                -_ambient.value * 9,
+                math.sin(_ambient.value * math.pi) * 6,
+                -30 - _ambient.value * 8,
               ),
               child: Transform.scale(
-                scale: 1.08 + _ambient.value * .035,
+                scale: 1.13 + _ambient.value * .025,
                 child: child,
               ),
             ),
@@ -200,11 +200,12 @@ class _SageStoryPageState extends State<SageStoryPage>
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                stops: [0, .42, .72, 1],
+                stops: [0, .38, .62, .82, 1],
                 colors: [
                   Color(0x9907131C),
                   Color(0x2207131C),
                   Color(0xAA07131C),
+                  Color(0xF507131C),
                   SageTheme.background,
                 ],
               ),
