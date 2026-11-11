@@ -36,12 +36,12 @@ class _ToxicLabPageState extends State<ToxicLabPage> with SingleTickerProviderSt
         if (_active) {
           _activeSeconds+=.1;
           _deploymentSeconds+=.1;
-          if (_ability.fuelRate>0) _fuel=(_fuel-_ability.fuelRate*.1).clamp(0,100);
+          if (_ability.fuelRate>0) _fuel=(_fuel-_ability.fuelRate*.1).clamp(0,100).toDouble();
           if ((_ability.code=='C' && _deploymentSeconds>=5) || (_ability.fuelRate>0 && _fuel<=0)) {
             _active=false; _deactivations++; _audio.stop();
           }
         } else {
-          _fuel=(_fuel+.28).clamp(0,100);
+          _fuel=(_fuel+.28).clamp(0,100).toDouble();
         }
       });
     });
@@ -290,7 +290,7 @@ class _AbilityEffectPainter extends CustomPainter {
       for(var i=0;i<5;i++){final x=r.left+r.width*i/4;canvas.drawLine(Offset(x,r.top),Offset(x+4,r.bottom),
         Paint()..color=const Color(0xFF9BFF75).withValues(alpha:.35*intensity)..strokeWidth=1);}
     } else if(code=='Q') {
-      final radius=size.height*(.23+progress*.025)*intensity.clamp(.5,1.2);
+      final radius=size.height*(.23+progress*.025)*intensity.clamp(.5,1.2).toDouble();
       canvas.drawCircle(center,radius+8,glow);canvas.drawCircle(center,radius,fill);
       canvas.drawCircle(center,radius,stroke);canvas.drawCircle(center,radius*.68,stroke..strokeWidth=1);
       for(var i=0;i<8;i++){canvas.save();canvas.translate(center.dx,center.dy);
