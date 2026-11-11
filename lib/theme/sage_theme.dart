@@ -8,6 +8,11 @@ abstract final class SageTheme {
   static const cyan = Color(0xFF70D8E8);
   static const jade = Color(0xFF8FE4D0);
   static const muted = Color(0xFF8CAEBB);
+  static const toxicGreen = cyan;
+  static const brightGreen = ice;
+  static const mutedGreen = Color(0xFF315B6B);
+  static const secondaryText = muted;
+  static const elevatedSurface = elevated;
 
   static ThemeData get dark {
     final scheme = ColorScheme.fromSeed(
