@@ -13,6 +13,8 @@ analyzer:
   exclude:
     - build/**
     - android/**
+    # Vendored plugin source/examples are maintained outside this app.
+    - third_party/video_thumbnail/**
 
 linter:
   # The lint rules applied to this project can be customized in the
