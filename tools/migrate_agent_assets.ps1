@@ -31,6 +31,16 @@ foreach ($folder in $folders) {
     Write-Host "Moved $($folder.Source) -> $($folder.Destination)"
 }
 
+$legacyPromo = Join-Path $root 'assets/pr2.mp4'
+$promoDestination = Join-Path $root 'assets/viper/videos/pr2.mp4'
+if (Test-Path -LiteralPath $legacyPromo) {
+    if (Test-Path -LiteralPath $promoDestination) {
+        throw "Target already exists; refusing to overwrite: $promoDestination"
+    }
+    Move-Item -LiteralPath $legacyPromo -Destination $promoDestination
+    Write-Host 'Moved assets/pr2.mp4 -> assets/viper/videos/pr2.mp4'
+}
+
 Write-Host ''
 Write-Host 'Viper assets are now under assets/viper/.'
 Write-Host 'Sage assets are under assets/sage/.'
