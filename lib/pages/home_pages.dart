@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:viper/pages/full_story_page.dart';
 import 'package:viper/features/viper/toxic_lab/toxic_lab_page.dart';
 import 'package:viper/theme/viper_theme.dart';
@@ -14,9 +18,13 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final AudioPlayer _audioPlayer = AudioPlayer();
   late final AnimationController _heroMotion;
+  late final AnimationController _heroPulse;
+  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
+  double _tiltX = 0;
+  double _tiltY = 0;
 
   static const _abilities = <_AbilityData>[
     _AbilityData(
@@ -64,6 +72,32 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       vsync: this,
       duration: const Duration(seconds: 18),
     )..repeat(reverse: true);
+    _heroPulse = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 720),
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _heroPulse.reverse();
+        }
+      });
+    _accelerometerSubscription = accelerometerEventStream().listen(
+      _handleDeviceTilt,
+      onError: (_) {},
+    );
+  }
+
+  void _handleDeviceTilt(AccelerometerEvent event) {
+    if (!mounted) return;
+    final nextX = (event.z / 9.8).clamp(-1.0, 1.0);
+    final nextY = (event.x / 9.8).clamp(-1.0, 1.0);
+    setState(() {
+      _tiltX = _tiltX * .78 + nextX * .22;
+      _tiltY = _tiltY * .78 + nextY * .22;
+    });
+  }
+
+  void _triggerHeroPulse() {
+    _heroPulse.forward(from: 0);
   }
 
   Future<void> _playSound(String asset) async {
@@ -96,7 +130,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
+    _accelerometerSubscription?.cancel();
     _heroMotion.dispose();
+    _heroPulse.dispose();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -227,15 +263,26 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         fit: StackFit.expand,
         children: [
           AnimatedBuilder(
-            animation: _heroMotion,
+            animation: Listenable.merge([_heroMotion, _heroPulse]),
             builder: (context, child) {
-              final progress = _heroMotion.value;
+              final idle = _heroMotion.value;
+              final pulse = math.sin(_heroPulse.value * math.pi);
               return ClipRect(
-                child: Transform.translate(
-                  offset: Offset(-9 + progress * 18, 0),
-                  child: Transform.scale(
-                    scale: 1.045 + progress * .045,
-                    child: child,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, .0012)
+                    ..rotateX(_tiltX * -.075)
+                    ..rotateY(_tiltY * .075),
+                  child: Transform.translate(
+                    offset: Offset(
+                      -9 + idle * 18 + _tiltY * -15,
+                      _tiltX * -13,
+                    ),
+                    child: Transform.scale(
+                      scale: 1.045 + idle * .045 + pulse * .035,
+                      child: child,
+                    ),
                   ),
                 ),
               );
@@ -270,8 +317,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               child: const SizedBox.expand(),
             ),
           ),
-          const IgnorePointer(
-            child: ToxicParticles(particleCount: 26, opacity: .24),
+          IgnorePointer(
+            child: AnimatedBuilder(
+              animation: _heroPulse,
+              builder: (context, child) => Opacity(
+                opacity: .24 + _heroPulse.value * .5,
+                child: Transform.scale(
+                  scale: 1 + _heroPulse.value * .16,
+                  child: child,
+                ),
+              ),
+              child: const ToxicParticles(particleCount: 26, opacity: .24),
+            ),
           ),
           const DecoratedBox(
             decoration: BoxDecoration(
@@ -285,6 +342,19 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ],
                 stops: [0, .42, 1],
               ),
+            ),
+          ),
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _triggerHeroPulse,
+            ),
+          ),
+          Positioned(
+            right: 20,
+            bottom: 96,
+            child: IgnorePointer(
+              child: _TiltHint(tilt: _tiltX.abs() + _tiltY.abs()),
             ),
           ),
           SafeArea(
