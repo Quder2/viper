@@ -88,8 +88,15 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
   }
 
   Future<void> _playSound(String asset) async {
-    await _audioPlayer.stop();
-    await _audioPlayer.play(AssetSource(asset));
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource(asset));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Добавь звуковой файл assets/$asset')),
+      );
+    }
   }
 
   void _openAgentSelection() {
