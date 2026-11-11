@@ -87,12 +87,12 @@ class AgentSelectionPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       _AgentCard(
-                        name: SageProfileConfig.name,
+                        name: SageProfileConfig.profile.name,
                         subtitle: 'СТРАЖ  •  КИТАЙ',
                         description: 'Исцеление. Защита союзников. Возвращение павших.',
                         accent: SageTheme.cyan,
                         background: SageTheme.surface,
-                        image: SageProfileConfig.heroImage,
+                        image: SageProfileConfig.profile.heroImage,
                         localImage: true,
                         code: 'S-07',
                         onTap: () => Navigator.of(context).pushReplacement(
