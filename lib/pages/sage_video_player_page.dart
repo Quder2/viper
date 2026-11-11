@@ -135,7 +135,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
           backgroundColor: SageTheme.surface,
           title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w800)),
-            const Text('TACTICAL VIDEO ARCHIVE',
+            const Text('RADIANT VIDEO ARCHIVE',
               style: TextStyle(fontSize: 8, letterSpacing: 1.8, color: SageTheme.jade)),
           ]),
           actions: [_badge(), const SizedBox(width: 14)],
