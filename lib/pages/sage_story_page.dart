@@ -147,10 +147,10 @@ class _SageStoryPageState extends State<SageStoryPage>
             builder: (context, child) => Transform.translate(
               offset: Offset(
                 math.sin(_ambient.value * math.pi) * 6,
-                -30 - _ambient.value * 8,
+                -88 - _ambient.value * 6,
               ),
               child: Transform.scale(
-                scale: 1.13 + _ambient.value * .025,
+                scale: 1.18 + _ambient.value * .025,
                 child: child,
               ),
             ),
