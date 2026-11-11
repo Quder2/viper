@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: _abilities.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 12),
+                          separatorBuilder: (_, _) => const SizedBox(width: 12),
                           itemBuilder: (context, index) {
                             final ability = _abilities[index];
                             return _VideoArchiveCard(
