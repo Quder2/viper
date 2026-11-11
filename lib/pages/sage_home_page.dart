@@ -229,7 +229,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const SizedBox(height: 28),
                       _StoryButton(onTap: _openStory),
                       const SizedBox(height: 24),
-                      const Center(
+                      Center(
                         child: Text(
                           SageProfileConfig.profile.footer,
                           style: TextStyle(
@@ -379,7 +379,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                       const Icon(Icons.shield_moon_outlined,
                           color: SageTheme.cyan, size: 17),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           SageProfileConfig.profile.headerLabel,
                           style: TextStyle(
