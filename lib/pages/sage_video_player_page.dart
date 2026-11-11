@@ -210,8 +210,10 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> {
                 await c.setPlaybackSpeed(value);
                 if (mounted) setState(() {});
               },
-              itemBuilder: (_) => [0.5, 0.75, 1, 1.25, 1.5, 2]
-                  .map((v) => PopupMenuItem(value: v, child: Text('${v}x'))).toList(),
+              itemBuilder: (_) => <PopupMenuEntry<double>>[
+                for (final speed in <double>[0.5, 0.75, 1.0, 1.25, 1.5, 2.0])
+                  PopupMenuItem<double>(value: speed, child: Text('${speed}x')),
+              ],
               child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text('${_speed}x', style: const TextStyle(color: SageTheme.ice, fontWeight: FontWeight.bold))),
             ),
           ]),
