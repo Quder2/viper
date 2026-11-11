@@ -88,8 +88,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   void _handleDeviceTilt(AccelerometerEvent event) {
     if (!mounted) return;
-    final nextX = (event.z / 9.8).clamp(-1.0, 1.0);
-    final nextY = (event.x / 9.8).clamp(-1.0, 1.0);
+    final nextX = (event.z / 9.8).clamp(-1.0, 1.0).toDouble();
+    final nextY = (event.x / 9.8).clamp(-1.0, 1.0).toDouble();
     setState(() {
       _tiltX = _tiltX * .78 + nextX * .22;
       _tiltY = _tiltY * .78 + nextY * .22;
