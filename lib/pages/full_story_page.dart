@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:viper/theme/viper_theme.dart';
 import 'package:viper/widgets/toxic_particles.dart';
 
-class FullStoryPage extends StatelessWidget {
+class FullStoryPage extends StatefulWidget {
   const FullStoryPage({super.key});
+
+  @override
+  State<FullStoryPage> createState() => _FullStoryPageState();
 
   static const _sections = <_StorySection>[
     _StorySection(
@@ -22,6 +28,46 @@ class FullStoryPage extends StatelessWidget {
       text: 'Привлекая внимание своими черными как смоль волосами и ядовито-зелеными глазами, Вайпер также носит черную маску. Когда Вайпер использует свою ультимативную способность, эта маска превращается в противогаз, который закрывает всю ее голову. Она надевает зеленое облегающее боди с острыми черными плечевыми пластинами и носит специальные перчатки, в которых она может выпускать свои токсичные газы. Она носит черные ботинки, доходящие ей до бедер, и несет на спине контейнер, в котором находятся ее токсины.',
     ),
   ];
+
+}
+
+class _FullStoryPageState extends State<FullStoryPage> with TickerProviderStateMixin {
+  late final AnimationController _tiltSmoothing;
+  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
+  double _targetTiltX = 0;
+  double _targetTiltY = 0;
+  double _tiltX = 0;
+  double _tiltY = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _tiltSmoothing = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 16),
+    )
+      ..addListener(_smoothDeviceTilt)
+      ..repeat();
+    _accelerometerSubscription = accelerometerEventStream().listen(
+      (event) {
+        _targetTiltX = (event.z / 9.8 * .24).clamp(-.24, .24).toDouble();
+        _targetTiltY = (event.x / 9.8 * .30).clamp(-.30, .30).toDouble();
+      },
+      onError: (_) {},
+    );
+  }
+
+  void _smoothDeviceTilt() {
+    _tiltX += (_targetTiltX - _tiltX) * .085;
+    _tiltY += (_targetTiltY - _tiltY) * .085;
+  }
+
+  @override
+  void dispose() {
+    _accelerometerSubscription?.cancel();
+    _tiltSmoothing.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +116,7 @@ class FullStoryPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 22),
-                      ..._sections.map(
+                      ...FullStoryPage._sections.map(
                         (section) => Padding(
                           padding: const EdgeInsets.only(bottom: 13),
                           child: _StoryCard(section: section),
@@ -106,7 +152,20 @@ class FullStoryPage extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/images/1.png', fit: BoxFit.cover),
+          AnimatedBuilder(
+            animation: _tiltSmoothing,
+            child: Image.asset('assets/images/1.png', fit: BoxFit.cover),
+            builder: (context, child) => Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, .0012)
+                ..rotateX(_tiltX)
+                ..rotateY(_tiltY)
+                ..translate(_tiltY * 18, _tiltX * 14)
+                ..scale(1.07),
+              child: child,
+            ),
+          ),
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
