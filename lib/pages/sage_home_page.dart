@@ -32,9 +32,14 @@ class _SageHomePageState extends State<SageHomePage> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   String? _playingFile;
 
+  StreamSubscription<void>? _audioCompleteSubscription;
+
   @override
   void initState() {
     super.initState();
+    _audioCompleteSubscription = _audioPlayer.onPlayerComplete.listen((_) {
+      if (mounted) setState(() => _playingFile = null);
+    });
   }
 
   @override
