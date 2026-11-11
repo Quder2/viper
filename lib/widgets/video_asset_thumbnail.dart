@@ -15,12 +15,14 @@ class VideoAssetThumbnail extends StatelessWidget {
     required this.fallbackAsset,
     this.timeMs = 1800,
     this.fit = BoxFit.cover,
+    this.fallback,
   });
 
   final String videoAsset;
   final String fallbackAsset;
   final int timeMs;
   final BoxFit fit;
+  final Widget? fallback;
 
   static final Map<String, Future<Uint8List?>> _cache = {};
 
@@ -76,7 +78,7 @@ class VideoAssetThumbnail extends StatelessWidget {
             filterQuality: FilterQuality.high,
           );
         }
-        return Image.asset(
+        return fallback ?? Image.asset(
           fallbackAsset,
           fit: fit,
           filterQuality: FilterQuality.high,
