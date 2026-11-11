@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:viper/pages/home_pages.dart';
 import 'package:viper/pages/sage_home_page.dart';
+import 'package:viper/config/sage_profile_config.dart';
 
 class AgentSelectionPage extends StatelessWidget {
   const AgentSelectionPage({super.key});
@@ -90,7 +91,7 @@ class AgentSelectionPage extends StatelessWidget {
                         description: 'Исцеление. Защита союзников. Возвращение павших.',
                         accent: const Color(0xFF9DEBEE),
                         background: const Color(0xFF102A38),
-                        image: 'assets/sage/images/1.jpg',
+                        image: SageProfileConfig.heroImage,
                         localImage: true,
                         code: 'S-07',
                         onTap: () => Navigator.of(context).pushReplacement(
