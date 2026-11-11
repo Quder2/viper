@@ -430,6 +430,50 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 }
 
+class _TiltHint extends StatelessWidget {
+  const _TiltHint({required this.tilt});
+
+  final double tilt;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = tilt > .12;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xCC07130B),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: const Color(0xFF9BFF83).withValues(alpha: active ? .7 : .28),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF9BFF83).withValues(alpha: active ? .16 : .04),
+            blurRadius: active ? 18 : 8,
+          ),
+        ],
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.screen_rotation_alt, color: Color(0xFFB8FF9B), size: 13),
+          SizedBox(width: 7),
+          Text(
+            'НАКЛОНЯЙ УСТРОЙСТВО',
+            style: TextStyle(
+              color: Color(0xFFB8FF9B),
+              fontSize: 8,
+              fontWeight: FontWeight.w800,
+              letterSpacing: .8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _AbilityData {
   const _AbilityData({
     required this.code,
