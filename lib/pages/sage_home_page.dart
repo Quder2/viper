@@ -10,11 +10,12 @@ class SageHomePage extends StatelessWidget {
   static const _background =
       'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/background.png';
 
+  static const _abilityBase = 'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/abilities';
   static const _abilities = <_SageAbility>[
-    _SageAbility('C', 'СФЕРА БАРЬЕРА', 'Создаёт прочную ледяную стену, перекрывающую проход и меняющую геометрию боя.', Icons.ac_unit_rounded),
-    _SageAbility('Q', 'СФЕРА ЗАМЕДЛЕНИЯ', 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников.', Icons.ac_unit_rounded),
-    _SageAbility('E', 'СФЕРА ЛЕЧЕНИЯ', 'Восстанавливает здоровье себе или раненому союзнику.', Icons.favorite_rounded),
-    _SageAbility('X', 'ВОЗРОЖДЕНИЕ', 'Возвращает павшего союзника к жизни. Последний шанс переломить ход раунда.', Icons.auto_awesome_rounded),
+    _SageAbility('C', 'СФЕРА БАРЬЕРА', 'Создаёт прочную ледяную стену, перекрывающую проход и меняющую геометрию боя.', '$_abilityBase/grenade/displayicon.png'),
+    _SageAbility('Q', 'СФЕРА ЗАМЕДЛЕНИЯ', 'Разбивает сферу о землю и создаёт поле, замедляющее проходящих через него противников.', '$_abilityBase/ability1/displayicon.png'),
+    _SageAbility('E', 'СФЕРА ЛЕЧЕНИЯ', 'Восстанавливает здоровье себе или раненому союзнику.', '$_abilityBase/ability2/displayicon.png'),
+    _SageAbility('X', 'ВОЗРОЖДЕНИЕ', 'Возвращает павшего союзника к жизни. Последний шанс переломить ход раунда.', '$_abilityBase/ultimate/displayicon.png'),
   ];
 
   @override
@@ -165,11 +166,11 @@ class SageHomePage extends StatelessWidget {
 }
 
 class _SageAbility {
-  const _SageAbility(this.code, this.title, this.description, this.icon);
+  const _SageAbility(this.code, this.title, this.description, this.image);
   final String code;
   final String title;
   final String description;
-  final IconData icon;
+  final String image;
 }
 
 class _AbilityCard extends StatelessWidget {
@@ -195,7 +196,14 @@ class _AbilityCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: SageTheme.cyan.withValues(alpha: .35)),
           ),
-          child: Icon(ability.icon, color: SageTheme.ice, size: 24),
+          child: Padding(
+            padding: const EdgeInsets.all(7),
+            child: Image.network(
+              ability.image,
+              fit: BoxFit.contain,
+              errorBuilder: (_, _, _) => const Icon(Icons.auto_awesome_rounded, color: SageTheme.ice, size: 24),
+            ),
+          ),
         ),
         const SizedBox(width: 13),
         Expanded(
