@@ -1,24 +1,18 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:viper/pages/full_story_page.dart';
-import 'package:viper/play_animation_widget.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Music Player',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomePage(),
-    );
-  }
-}
+import 'package:viper/config/viper_profile_config.dart';
+import 'package:viper/models/agent_ability_data.dart';
+import 'package:viper/pages/agent_selection_page.dart';
+import 'package:viper/features/viper/toxic_lab/toxic_lab_page.dart';
+import 'package:viper/theme/viper_theme.dart';
+import 'package:viper/widgets/local_video_player_page.dart';
+import 'package:viper/widgets/toxic_particles.dart';
+import 'package:viper/widgets/video_asset_thumbnail.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,23 +21,112 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  late final AnimationController _heroMotion;
+  late final AnimationController _heroPulse;
+  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
+  late final AnimationController _tiltSmoothing;
+  double _targetTiltX = 0;
+  double _targetTiltY = 0;
+  double _tiltX = 0;
+  double _tiltY = 0;
 
-  void _playMusic(String fileName) async {
-    await _audioPlayer.setSource(AssetSource(fileName));
-    await _audioPlayer.resume();
+
+
+  @override
+  void initState() {
+    super.initState();
+    _heroMotion = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 18),
+    )..repeat(reverse: true);
+    _heroPulse = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 720),
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _heroPulse.reverse();
+        }
+      });
+    // Sensor readings update targets; visual movement is interpolated on Flutter frames.
+    _tiltSmoothing = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 16),
+    )
+      ..addListener(_smoothDeviceTilt)
+      ..repeat();
+    _accelerometerSubscription = accelerometerEventStream().listen(
+      _handleDeviceTilt,
+      onError: (_) {},
+    );
   }
 
-  void _navigateToFullStory() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => FullStoryPage()),
+  void _handleDeviceTilt(AccelerometerEvent event) {
+    _targetTiltX = (event.z / 9.8).clamp(-1.0, 1.0).toDouble();
+    _targetTiltY = (event.x / 9.8).clamp(-1.0, 1.0).toDouble();
+  }
+
+  void _smoothDeviceTilt() {
+    if (!mounted) return;
+    // A small per-frame interpolation removes sensor jitter without adding lag.
+    const smoothing = .085;
+    final nextX = _tiltX + (_targetTiltX - _tiltX) * smoothing;
+    final nextY = _tiltY + (_targetTiltY - _tiltY) * smoothing;
+    if ((nextX - _tiltX).abs() < .0005 &&
+        (nextY - _tiltY).abs() < .0005) {
+      return;
+    }
+    setState(() {
+      _tiltX = nextX;
+      _tiltY = nextY;
+    });
+  }
+
+  void _triggerHeroPulse() {
+    _heroPulse.forward(from: 0);
+  }
+
+  Future<void> _playSound(String asset) async {
+    await _audioPlayer.stop();
+    await _audioPlayer.play(AssetSource(asset));
+  }
+
+  void _openAgentSelection() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const AgentSelectionPage()),
+    );
+  }
+
+  void _openStory() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const FullStoryPage()),
+    );
+  }
+
+  void _openToxicLab() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const ToxicLabPage()),
+    );
+  }
+
+  void _openVideo(AgentAbilityData ability) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => LocalVideoPlayerPage(
+          title: ability.title,
+          assetPath: ability.video,
+        ),
+      ),
     );
   }
 
   @override
   void dispose() {
+    _accelerometerSubscription?.cancel();
+    _tiltSmoothing.dispose();
+    _heroMotion.dispose();
+    _heroPulse.dispose();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -51,520 +134,784 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: ViperTheme.background,
       body: Stack(
         children: [
+          const Positioned.fill(
+            child: IgnorePointer(child: ToxicParticles()),
+          ),
           CustomScrollView(
             slivers: [
-              SliverAppBar(
-                expandedHeight: 400,
-                backgroundColor: Colors.black,
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.pin,
-                  background: Container(
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/1.png'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomRight,
-                          colors: [
-                            Colors.black,
-                            Colors.black.withOpacity(.4),
-                          ],
+              SliverToBoxAdapter(child: _buildHero()),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 24, 18, 36),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _ArchiveLabel('AGENT DOSSIER  //  CLASSIFIED'),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'КОНТРОЛЬ.\nТОКСИНЫ.\nПОБЕДА.',
+                        style: TextStyle(
+                          color: Color(0xFFE2FFD8),
+                          fontSize: 27,
+                          height: 1.08,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
                         ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const PlayAnimationWidget(
-                              delay: 1,
-                              child: Text(
-                                'VIPER',
-                                style: TextStyle(
-                                    color: Color.fromARGB(255, 10, 150, 40),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 40),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              children: const [
-                                PlayAnimationWidget(
-                                  delay: 1.2,
-                                  child: Text(
-                                    'Да, это мой мир! ',
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 22, 99, 3),
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                PlayAnimationWidget(
-                                  delay: 1.2,
-                                  child: Text(
-                                    'На колени',
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 22, 99, 3),
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                      const SizedBox(height: 14),
+                      const Text(
+                        'Химик из США Viper устанавливает контроль над полем боя с помощью источающих токсичный газ устройств и ограничивает обзор противникам. А тех, кого ей не удастся отравить, она непременно перехитрит.',
+                        style: TextStyle(
+                          color: Color(0xFF9BB5A0),
+                          height: 1.55,
+                          fontSize: 13,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 22),
+                      const Row(
+                        children: [
+                          _DataChip(icon: Icons.shield_outlined, label: 'СПЕЦИАЛИСТ'),
+                          SizedBox(width: 8),
+                          _DataChip(icon: Icons.signal_cellular_alt, label: 'СЛОЖНОСТЬ  2/3'),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+                      const _SectionHeading(
+                        eyebrow: 'CHEMICAL LOADOUT',
+                        title: 'АРСЕНАЛ',
+                      ),
+                      const SizedBox(height: 14),
+                      ...ViperProfileConfig.profile.abilities.map(
+                        (ability) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _AbilityPanel(
+                            ability: ability,
+                            onSound: () => _playSound(ability.sound),
+                            onVideo: () => _openVideo(ability),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      const _SectionHeading(
+                        eyebrow: 'TACTICAL FOOTAGE',
+                        title: 'ВИДЕОАРХИВ',
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Записи способностей • локальные материалы',
+                        style: TextStyle(
+                          color: Color(0xFF77917D),
+                          fontSize: 11,
+                          letterSpacing: .5,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      SizedBox(
+                        height: 184,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: ViperProfileConfig.profile.abilities.length,
+                          separatorBuilder: (_, _) => const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            final ability = ViperProfileConfig.profile.abilities[index];
+                            return _VideoArchiveCard(
+                              ability: ability,
+                              onTap: () => _openVideo(ability),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      _ToxicLabButton(onTap: _openToxicLab),
+                      const SizedBox(height: 12),
+                      _StoryButton(onTap: _openStory),
+                      const SizedBox(height: 24),
+                      const Center(
+                        child: Text(
+                          'VIPER // TOXIC ARCHIVE  •  END OF FILE',
+                          style: TextStyle(
+                            color: Color(0xFF55745D),
+                            fontSize: 8,
+                            letterSpacing: 1.7,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'Химик из США Viper устанавливает контроль над полем боя с помощью источающих токсичный газ устройств и ограничивает обзор противникам. А тех, кого ей не удастся отравить, она непременно перехитрит.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'РОЛЬ',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 10, 150, 40),
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: const [
-                            PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Image(
-                                image: AssetImage('assets/abilities/Smoke.png'),
-                                width: 30,
-                                height: 30,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            const PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Text(
-                                '  Специалист',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  height: 1.4,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'СЛОЖНОСТЬ',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 10, 150, 40),
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: const [
-                            PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Icon(
-                                Icons.star,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Icon(
-                                Icons.star,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Icon(
-                                Icons.star_border,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'СПОСОБНОСТИ',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 10, 150, 40),
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: const [
-                            PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Image(
-                                image: AssetImage('assets/abilities/C.png'),
-                                width: 45,
-                                height: 45,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            const PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Text(
-                                '  ЗМЕИНЫЙ УКУС',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 10, 150, 40),
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'ВЫБИРАЕТ капсулу с кислотой. Нажмите кнопку ОГОНЬ, чтобы запустить капсулу, которая разбивается при падении, оставляя после себя лужу кислоты. Попавшие в кислоту противники получают урон и становятся уязвимыми.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _playMusic('sound/C_act.mp3'),
-                          child: const Text(
-                            'ЗМЕИНЫЙ УКУС',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 10, 150, 40),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: const [
-                            PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Image(
-                                image: AssetImage('assets/abilities/Q.png'),
-                                width: 45,
-                                height: 45,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            const PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Text(
-                                '  ЯДОВИТОЕ ОБЛОКО',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 10, 150, 40),
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'ВЫБИРАЕТ распылитель газа. Нажмите кнопку ОГОНЬ, чтобы выбросить распылитель, который остается на месте до конца раунда. Нажмите кнопку АЛЬТ. ОГОНЬ, чтобы сделать бросок снизу. Примените умение повторно, чтобы выпустить из распылителя облако ядовитого дыма, расходуя топливо. Можно использовать больше одного раза, а также подобрать и РАЗМЕСТИТЬ ЗАНОВО.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _playMusic('sound/Q_act.mp3'),
-                          child: const Text(
-                            'ЯДОВИТОЕ ОБЛОКО',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 10, 150, 40),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: const [
-                            PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Image(
-                                image: AssetImage('assets/abilities/E.png'),
-                                width: 40,
-                                height: 40,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            const PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Text(
-                                '  ТОКСИЧНАЯ ЗАВЕСА',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 10, 150, 40),
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'ВЫБИРАЕТ распылители газа, проникающие сквозь препятствия. Нажмите кнопку ОГОНЬ, чтобы выстрелить длинной очередью распылителей. При повторном использовании распылители образуют стену ядовитого дыма, расходуя топливо. Умение можно применять больше одного раза.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _playMusic('sound/E_act.mp3'),
-                          child: const Text(
-                            'ТОКСИЧНАЯ ЗАВЕСА',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 10, 150, 40),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: const [
-                            PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Image(
-                                image: AssetImage('assets/abilities/X.png'),
-                                width: 48,
-                                height: 48,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            const PlayAnimationWidget(
-                              delay: 1.6,
-                              child: Text(
-                                '  ГНЕЗДО ГАДЮКИ',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 10, 150, 40),
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'ВЫБИРАЕТ распылитель химикатов. Нажмите кнопку ОГОНЬ, чтобы распылить вокруг Viper облако химикатов, уменьшая дальность видимости игроков и максимальный запас здоровья находящихся в нем врагов. УДЕРЖИВАЙТЕ кнопку умения, чтобы остановить распыление.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _playMusic('sound/X_act.mp3'),
-                          child: const Text(
-                            'ГНЕЗДО ГАДЮКИ',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 10, 150, 40),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Text(
-                            'ВИДЕО',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 10, 150, 40),
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        PlayAnimationWidget(
-                          delay: 1.6,
-                          child: Container(
-                            height: 200,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                makeVideoWodget(
-                                    imagePath: 'assets/images/2.png'),
-                                makeVideoWodget(
-                                    imagePath: 'assets/images/3.png'),
-                                makeVideoWodget(
-                                    imagePath: 'assets/images/4.png')
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 100,
-                        )
-                      ],
-                    ),
-                  )
-                ]),
-              )
             ],
           ),
-          Positioned.fill(
-            bottom: 20,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: PlayAnimationWidget(
-                  delay: 2,
-                  child: GestureDetector(
-                    onTap: _navigateToFullStory,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 30),
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Color.fromARGB(255, 14, 58, 4),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHero() {
+    return SizedBox(
+      height: 430,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          AnimatedBuilder(
+            animation: Listenable.merge([_heroMotion, _heroPulse]),
+            builder: (context, child) {
+              final idle = _heroMotion.value;
+              final pulse = math.sin(_heroPulse.value * math.pi);
+              return ClipRect(
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, .0012)
+                    ..rotateX(_tiltX * -.14)
+                    ..rotateY(_tiltY * .14),
+                  child: Transform.translate(
+                    offset: Offset(
+                      -9 + idle * 18 + _tiltY * -30,
+                      _tiltX * -26,
+                    ),
+                    child: Transform.scale(
+                      scale: 1.045 + idle * .045 + pulse * .035,
+                      child: child,
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: Image.asset(
+              'assets/viper/images/1.png',
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+            ),
+          ),
+          IgnorePointer(
+            child: AnimatedBuilder(
+              animation: _heroMotion,
+              builder: (context, child) => DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment(
+                      -.55 + _heroMotion.value * 1.1,
+                      -.35,
+                    ),
+                    radius: 1.15,
+                    colors: [
+                      const Color(0xFF9BFF83).withValues(
+                        alpha: .035 + _heroMotion.value * .035,
                       ),
-                      child: const Align(
-                        child: Text(
-                          'Полная история',
-                          style: TextStyle(color: Colors.grey),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: child,
+              ),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          IgnorePointer(
+            child: AnimatedBuilder(
+              animation: _heroPulse,
+              builder: (context, child) => Opacity(
+                opacity: .24 + _heroPulse.value * .5,
+                child: Transform.scale(
+                  scale: 1 + _heroPulse.value * .16,
+                  child: child,
+                ),
+              ),
+              child: const ToxicParticles(particleCount: 26, opacity: .24),
+            ),
+          ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xAA030A06),
+                  Color(0x22030A06),
+                  Color(0xFF030A06),
+                ],
+                stops: [0, .42, 1],
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _triggerHeroPulse,
+            ),
+          ),
+          Positioned(
+            right: 20,
+            bottom: 96,
+            child: IgnorePointer(
+              child: _TiltHint(tilt: _tiltX.abs() + _tiltY.abs()),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Material(
+                        color: const Color(0xCC102719),
+                        shape: const CircleBorder(
+                          side: BorderSide(color: Color(0x669BFF83)),
+                        ),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: _openAgentSelection,
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(Icons.grid_view_rounded,
+                                color: Color(0xFFB8FF9B), size: 17),
+                          ),
                         ),
                       ),
-                    ),
-                  )),
+                      const SizedBox(width: 10),
+                      const Icon(Icons.shield_moon_outlined,
+                          color: Color(0xFF9BFF83), size: 17),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'KINGDOM // PERSONNEL FILE',
+                          style: TextStyle(
+                            color: Color(0xFFB8FF9B),
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.7,
+                          ),
+                        ),
+                      ),
+                      const _StatusPill(),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        'AGENT  V-01',
+                        style: TextStyle(
+                          color: Color(0xFF9BFF83),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2.4,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        'VIPER',
+                        style: TextStyle(
+                          color: Color(0xFFE2FFD8),
+                          fontSize: 54,
+                          height: .98,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 3,
+                          shadows: [
+                            Shadow(color: Color(0x9900E676), blurRadius: 24),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        '«ДА, ЭТО МОЙ МИР. НА КОЛЕНИ.»',
+                        style: TextStyle(
+                          color: Color(0xFFB8FF9B),
+                          fontSize: 10,
+                          letterSpacing: 1.4,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
 
-Widget makeVideoWodget({imagePath}) {
-  return AspectRatio(
-    aspectRatio: 1.5 / 1,
-    child: Container(
-      margin: const EdgeInsets.only(right: 20),
+class _TiltHint extends StatelessWidget {
+  const _TiltHint({required this.tilt});
+
+  final double tilt;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = tilt > .12;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
-            image: AssetImage(imagePath),
-            fit: BoxFit.cover,
-          )),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomRight,
-            colors: [
-              Colors.black.withOpacity(.9),
-              Colors.black.withOpacity(.3),
+        color: const Color(0xCC07130B),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: const Color(0xFF9BFF83).withValues(alpha: active ? .7 : .28),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF9BFF83).withValues(alpha: active ? .16 : .04),
+            blurRadius: active ? 18 : 8,
+          ),
+        ],
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.screen_rotation_alt, color: Color(0xFFB8FF9B), size: 13),
+          SizedBox(width: 7),
+          Text(
+            'НАКЛОНЯЙ УСТРОЙСТВО',
+            style: TextStyle(
+              color: Color(0xFFB8FF9B),
+              fontSize: 8,
+              fontWeight: FontWeight.w800,
+              letterSpacing: .8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ArchiveLabel extends StatelessWidget {
+  const _ArchiveLabel(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        style: const TextStyle(
+          color: Color(0xFF9BFF83),
+          fontSize: 9,
+          letterSpacing: 1.8,
+          fontWeight: FontWeight.w800,
+        ),
+      );
+}
+
+class _SectionHeading extends StatelessWidget {
+  const _SectionHeading({required this.eyebrow, required this.title});
+  final String eyebrow;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: 3,
+            height: 34,
+            decoration: BoxDecoration(
+              color: const Color(0xFF9BFF83),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: const [
+                BoxShadow(color: Color(0x8800E676), blurRadius: 12),
+              ],
+            ),
+          ),
+          const SizedBox(width: 11),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                eyebrow,
+                style: const TextStyle(
+                  color: Color(0xFF77917D),
+                  fontSize: 8,
+                  letterSpacing: 1.8,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Color(0xFFE2FFD8),
+                  fontSize: 19,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ],
           ),
+        ],
+      );
+}
+
+class _DataChip extends StatelessWidget {
+  const _DataChip({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0B1710),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .2)),
         ),
-        child: const Align(
-          child: Icon(
-            Icons.play_circle,
-            color: Color.fromARGB(178, 24, 102, 5),
-            size: 70,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: const Color(0xFF9BFF83)),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Color(0xFFB8FF9B),
+                fontSize: 8,
+                fontWeight: FontWeight.w800,
+                letterSpacing: .8,
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _StatusPill extends StatelessWidget {
+  const _StatusPill();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFF102719),
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .55)),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.circle, color: Color(0xFF9BFF83), size: 6),
+            SizedBox(width: 6),
+            Text(
+              'ACTIVE',
+              style: TextStyle(
+                color: Color(0xFFB8FF9B),
+                fontSize: 8,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _AbilityPanel extends StatelessWidget {
+  const _AbilityPanel({
+    required this.ability,
+    required this.onSound,
+    required this.onVideo,
+  });
+
+  final AgentAbilityData ability;
+  final VoidCallback onSound;
+  final VoidCallback onVideo;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xD90B1710),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .17)),
+          boxShadow: const [
+            BoxShadow(color: Color(0x2200E676), blurRadius: 18, spreadRadius: 1),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF102719),
+                    borderRadius: BorderRadius.circular(13),
+                    border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .25)),
+                  ),
+                  child: Image.asset(ability.image, fit: BoxFit.contain),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${ViperProfileConfig.profile.name} // ${ability.code}',
+                        style: const TextStyle(
+                          color: Color(0xFF9BFF83),
+                          fontSize: 8,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        ability.title.toUpperCase(),
+                        style: const TextStyle(
+                          color: Color(0xFFE2FFD8),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: .7,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Прослушать звук способности',
+                  onPressed: onSound,
+                  icon: const Icon(Icons.volume_up_rounded, color: Color(0xFF9BFF83)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              ability.description,
+              style: const TextStyle(
+                color: Color(0xFF9BB5A0),
+                fontSize: 11,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 13),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onVideo,
+                icon: const Icon(Icons.play_arrow_rounded, size: 19),
+                label: const Text('ОТКРЫТЬ ЗАПИСЬ'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFB8FF9B),
+                  side: BorderSide(color: const Color(0xFF9BFF83).withValues(alpha: .45)),
+                  backgroundColor: const Color(0xFF9BFF83).withValues(alpha: .07),
+                  textStyle: const TextStyle(
+                    fontSize: 9,
+                    letterSpacing: 1.2,
+                    fontWeight: FontWeight.w900,
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+
+int _previewTimeForAbility(String code) => switch (code) {
+      'C' => 2200,
+      'Q' => 2600,
+      'E' => 2400,
+      'ULT' => 3200,
+      _ => 1800,
+    };
+
+class _VideoArchiveCard extends StatelessWidget {
+  const _VideoArchiveCard({required this.ability, required this.onTap});
+  final AgentAbilityData ability;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: 238,
+        child: Material(
+          color: const Color(0xFF101812),
+          borderRadius: BorderRadius.circular(17),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                VideoAssetThumbnail(
+                  videoAsset: ability.video,
+                  fallbackAsset: ability.preview,
+                  timeMs: _previewTimeForAbility(ability.code),
+                ),
+                const DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x55030A06), Color(0xF5030A06)],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 11,
+                  left: 11,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF071B11).withValues(alpha: .85),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .55)),
+                    ),
+                    child: Text(
+                      '${ViperProfileConfig.profile.name} // ${ability.code}',
+                      style: const TextStyle(
+                        color: Color(0xFFB8FF9B),
+                        fontSize: 8,
+                        letterSpacing: 1.2,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ),
+                const Center(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xAA071B11),
+                      border: Border.fromBorderSide(
+                        BorderSide(color: Color(0xFFB8FF9B), width: 1.4),
+                      ),
+                      boxShadow: [
+                        BoxShadow(color: Color(0x8800E676), blurRadius: 20),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Icon(Icons.play_arrow_rounded, color: Color(0xFFB8FF9B), size: 30),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 13,
+                  right: 13,
+                  bottom: 12,
+                  child: Text(
+                    ability.title.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Color(0xFFE2FFD8),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: .8,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    ),
-  );
+      );
+}
+
+class _StoryButton extends StatelessWidget {
+  const _StoryButton({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: const Color(0xFF102719),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .48)),
+              boxShadow: const [
+                BoxShadow(color: Color(0x3300E676), blurRadius: 18),
+              ],
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.folder_special_outlined, color: Color(0xFFB8FF9B), size: 22),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'ПОЛНОЕ ДОСЬЕ АГЕНТА',
+                        style: TextStyle(
+                          color: Color(0xFFE2FFD8),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Биография • личность • внешность',
+                        style: TextStyle(color: Color(0xFF9BB5A0), fontSize: 9),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF9BFF83), size: 15),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _ToxicLabButton extends StatelessWidget {
+  const _ToxicLabButton({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: const Color(0xFF102719),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFF9BFF83).withValues(alpha: .58)),
+              boxShadow: const [BoxShadow(color: Color(0x4400E676), blurRadius: 18)],
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.science_outlined, color: Color(0xFFB8FF9B), size: 23),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('TOXIC LAB  //  ИНТЕРАКТИВНАЯ ЛАБОРАТОРИЯ',
+                        style: TextStyle(color: Color(0xFFE2FFD8), fontSize: 10,
+                          fontWeight: FontWeight.w900, letterSpacing: .7)),
+                      SizedBox(height: 4),
+                      Text('Изучи способности • настрой эффекты • запусти демонстрацию',
+                        style: TextStyle(color: Color(0xFF9BB5A0), fontSize: 9)),
+                    ],
+                  ),
+                ),
+                Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF9BFF83), size: 15),
+              ],
+            ),
+          ),
+        ),
+      );
 }

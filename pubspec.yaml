@@ -39,15 +39,20 @@ dependencies:
   rename: ^3.0.2
   flutter_launcher_icons: ^0.14.3
   audioplayers: ^6.2.0
+  video_player: ^2.10.0
+  video_thumbnail: ^0.5.6
+  path_provider: ^2.1.5
+  sensors_plus: ^6.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^6.0.0
 
-flutter_icons:
+flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icons/viper_icon.png"  
+  image_path: "assets/icon/icon.png"  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -69,20 +74,16 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/1.png
-    - assets/images/2.png
-    - assets/images/3.png
-    - assets/images/4.png
-    - assets/icons/
-    - assets/abilities/C.png
-    - assets/abilities/E.png
-    - assets/abilities/Q.png
-    - assets/abilities/X.png
-    - assets/abilities/Smoke.png
-    - assets/sound/C_act.mp3
-    - assets/sound/E_act.mp3
-    - assets/sound/Q_act.mp3
-    - assets/sound/X_act.mp3
+    - assets/icon/
+    - assets/viper/abilities/
+    - assets/viper/images/
+    - assets/viper/videos/
+    - assets/viper/voice/
+    - assets/sage/images/
+    - assets/sage/abilities/
+    - assets/sage/videos/
+    - assets/sage/voice/
+
 
 
 

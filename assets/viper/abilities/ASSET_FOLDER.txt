@@ -1,0 +1,1 @@
+Viper ability icons are moved here by tools/migrate_agent_assets.ps1.

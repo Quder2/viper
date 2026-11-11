@@ -1,0 +1,1 @@
+Viper artwork and preview images are moved here by tools/migrate_agent_assets.ps1.
