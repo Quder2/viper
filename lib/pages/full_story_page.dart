@@ -158,15 +158,19 @@ class _FullStoryPageState extends State<FullStoryPage> with TickerProviderStateM
               ClipRect(
                 child: AnimatedBuilder(
                   animation: _tiltSmoothing,
-                  child: Image.asset('assets/images/1.png', fit: BoxFit.cover),
+                  child: Image.asset(
+                    'assets/images/1.png',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                  ),
                   builder: (context, child) => Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()
                       ..setEntry(3, 2, .0012)
                       ..rotateX(_tiltX)
                       ..rotateY(_tiltY)
-                      ..translate(_tiltY * 18, _tiltX * 14)
-                      ..scale(1.15),
+                      ..translate(_tiltY * 18, 22 + _tiltX * 8)
+                      ..scale(1.08),
                     child: child,
                   ),
                 ),
