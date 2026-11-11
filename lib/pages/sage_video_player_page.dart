@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
+import 'package:viper/theme/sage_theme.dart';
 
 class SageVideoPlayerPage extends StatefulWidget {
   const SageVideoPlayerPage({super.key, required this.title, required this.assetPath, required this.code});
@@ -129,13 +130,13 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF07131C),
+        backgroundColor: const SageTheme.background,
         appBar: _fullscreen ? null : AppBar(
-          backgroundColor: const Color(0xFF102532),
+          backgroundColor: const SageTheme.surface,
           title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w800)),
             const Text('TACTICAL VIDEO ARCHIVE',
-              style: TextStyle(fontSize: 8, letterSpacing: 1.8, color: Color(0xFF8DBA91))),
+              style: TextStyle(fontSize: 8, letterSpacing: 1.8, color: SageTheme.jade)),
           ]),
           actions: [_badge(), const SizedBox(width: 14)],
         ),
@@ -151,7 +152,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
             ),
           ),
           child: _loading
-            ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator(color: Color(0xFF70D8E8)))
+            ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator(color: SageTheme.cyan))
             : _error != null || _controller == null
               ? Center(key: const ValueKey('error'), child: _VideoMissingMessage(assetPath: widget.assetPath))
               : _fullscreen
@@ -168,16 +169,16 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
       key: key,
       decoration: const BoxDecoration(gradient: LinearGradient(
         begin: Alignment.topCenter, end: Alignment.bottomCenter,
-        colors: [Color(0xFF0B2113), Color(0xFF07131C), Color(0xFF07131C)])),
+        colors: [SageTheme.background, SageTheme.background, SageTheme.background])),
       child: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
           children: [
             Row(children: [
-              const Icon(Icons.shield_moon_outlined, color: Color(0xFF70D8E8), size: 18),
+              const Icon(Icons.shield_moon_outlined, color: SageTheme.cyan, size: 18),
               const SizedBox(width: 8),
               const Text('SAGE // FIELD RECORDING',
-                style: TextStyle(color: Color(0xFF70D8E8), fontSize: 9, letterSpacing: 1.8, fontWeight: FontWeight.w800)),
+                style: TextStyle(color: SageTheme.cyan, fontSize: 9, letterSpacing: 1.8, fontWeight: FontWeight.w800)),
               const Spacer(),
               _badge(),
             ]),
@@ -187,7 +188,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
               builder: (_, child) => Container(
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),
                   boxShadow: [BoxShadow(
-                    color: const Color(0xFF39B9D3).withValues(alpha: .08 + _glow.value * .10),
+                    color: const SageTheme.jade.withValues(alpha: .08 + _glow.value * .10),
                     blurRadius: 24 + _glow.value * 12, spreadRadius: 1)]),
                 child: child,
               ),
@@ -201,9 +202,9 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(color: Colors.black.withValues(alpha: .62),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .45))),
+                        border: Border.all(color: const SageTheme.cyan.withValues(alpha: .45))),
                       child: Text(v.isPlaying ? 'PLAYING' : 'PAUSED',
-                        style: const TextStyle(color: Color(0xFFBDEFFF), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.2)))),
+                        style: const TextStyle(color: SageTheme.ice, fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.2)))),
                     Positioned(right: 10, bottom: 10, child: _cinemaButton(compact: true)),
                     if (!v.isPlaying) Center(child: _playButton(false)),
                   ]),
@@ -213,15 +214,15 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
             const SizedBox(height: 22),
             Row(children: [
               Container(width: 4, height: 42, decoration: BoxDecoration(
-                color: const Color(0xFF70D8E8), borderRadius: BorderRadius.circular(8),
-                boxShadow: const [BoxShadow(color: Color(0x8800E676), blurRadius: 12)])),
+                color: const SageTheme.cyan, borderRadius: BorderRadius.circular(8),
+                boxShadow: const [BoxShadow(color: SageTheme.glowMedium, blurRadius: 12)])),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(widget.title.toUpperCase(), style: const TextStyle(
-                  color: Color(0xFFDBF7FF), fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                  color: SageTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
                 const SizedBox(height: 4),
                 const Text('ЛОКАЛЬНОЕ ВИДЕО • ОБУЧАЮЩИЙ МАТЕРИАЛ',
-                  style: TextStyle(color: Color(0xFF7397A5), fontSize: 9, letterSpacing: .8)),
+                  style: TextStyle(color: SageTheme.mutedBright, fontSize: 9, letterSpacing: .8)),
               ])),
             ]),
             const SizedBox(height: 18),
@@ -230,8 +231,8 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
                 style: const TextStyle(color: Colors.white70, fontSize: 10)),
               Expanded(child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(trackHeight: 3,
-                  activeTrackColor: const Color(0xFF70D8E8), inactiveTrackColor: Colors.white12,
-                  thumbColor: const Color(0xFF70D8E8), overlayColor: const Color(0xFF70D8E8).withValues(alpha: .14),
+                  activeTrackColor: const SageTheme.cyan, inactiveTrackColor: Colors.white12,
+                  thumbColor: const SageTheme.cyan, overlayColor: const SageTheme.cyan.withValues(alpha: .14),
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6)),
                 child: Slider(
                   min: 0, max: maxMs,
@@ -255,30 +256,30 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(color: const Color(0xFF102532),
+              decoration: BoxDecoration(color: const SageTheme.surface,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .14))),
+                border: Border.all(color: const SageTheme.cyan.withValues(alpha: .14))),
               child: Row(children: [
                 IconButton(tooltip: 'Звук', onPressed: _mute,
                   icon: Icon(_muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-                    color: _muted ? Colors.white54 : const Color(0xFF70D8E8))),
+                    color: _muted ? Colors.white54 : const SageTheme.cyan)),
                 IconButton(tooltip: 'Повтор', onPressed: _loopToggle,
-                  icon: Icon(Icons.repeat_rounded, color: _loop ? const Color(0xFF70D8E8) : Colors.white54)),
+                  icon: Icon(Icons.repeat_rounded, color: _loop ? const SageTheme.cyan : Colors.white54)),
                 const Spacer(),
                 PopupMenuButton<double>(
-                  tooltip: 'Скорость', initialValue: _speed, color: const Color(0xFF173746),
+                  tooltip: 'Скорость', initialValue: _speed, color: const SageTheme.elevated,
                   onSelected: _speedTo,
                   itemBuilder: (_) => <double>[0.5, 0.75, 1, 1.25, 1.5, 2]
                     .map((x) => PopupMenuItem<double>(value: x, child: Text('$x x'))).toList(),
                   child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     child: Text('${_speed}x',
-                      style: const TextStyle(color: Color(0xFFBDEFFF), fontWeight: FontWeight.bold))),
+                      style: const TextStyle(color: SageTheme.ice, fontWeight: FontWeight.bold))),
                 ),
               ]),
             ),
             const SizedBox(height: 18),
             const Center(child: Text('RADIANT ARCHIVE  /  CLASSIFIED FOOTAGE',
-              style: TextStyle(color: Color(0xFF557D8A), fontSize: 8, letterSpacing: 2))),
+              style: TextStyle(color: SageTheme.mutedDeep, fontSize: 8, letterSpacing: 2))),
           ],
         ),
       ),
@@ -292,7 +293,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
       color: Colors.black,
       child: Stack(fit: StackFit.expand, children: [
         const DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(
-          center: Alignment.center, radius: 1.2, colors: [Color(0xFF173746), Colors.black]))),
+          center: Alignment.center, radius: 1.2, colors: [SageTheme.elevated, Colors.black]))),
         Center(child: AspectRatio(aspectRatio: v.aspectRatio, child: VideoPlayer(c))),
         Positioned.fill(child: IgnorePointer(child: AnimatedBuilder(
           animation: _glow, builder: (_, _) => CustomPaint(painter: _ToxicGlow(_glow.value))))),
@@ -314,7 +315,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1.2, fontSize: 12)),
                       const SizedBox(height: 3),
                       const Text('SAGE TACTICAL ARCHIVE',
-                        style: TextStyle(color: Color(0xFF8CAEBB), fontSize: 8, letterSpacing: 2)),
+                        style: TextStyle(color: SageTheme.muted, fontSize: 8, letterSpacing: 2)),
                     ])),
                     _badge(),
                   ])),
@@ -335,7 +336,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
                       Expanded(child: Slider(
                         min: 0, max: maxMs,
                         value: (_seeking ? _seekMs : v.position.inMilliseconds.toDouble()).clamp(0, maxMs).toDouble(),
-                        activeColor: const Color(0xFF70D8E8), inactiveColor: Colors.white24,
+                        activeColor: const SageTheme.cyan, inactiveColor: Colors.white24,
                         onChangeStart: (x) => setState(() { _seeking = true; _seekMs = x; }),
                         onChanged: (x) => setState(() => _seekMs = x),
                         onChangeEnd: (x) async {
@@ -349,16 +350,16 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
                       IconButton(tooltip: 'Звук', onPressed: _mute,
                         icon: Icon(_muted ? Icons.volume_off_rounded : Icons.volume_up_rounded, color: Colors.white)),
                       IconButton(tooltip: 'Повтор', onPressed: _loopToggle,
-                        icon: Icon(Icons.repeat_rounded, color: _loop ? const Color(0xFF70D8E8) : Colors.white54)),
+                        icon: Icon(Icons.repeat_rounded, color: _loop ? const SageTheme.cyan : Colors.white54)),
                       const Spacer(),
                       PopupMenuButton<double>(
-                        tooltip: 'Скорость', initialValue: _speed, color: const Color(0xFF173746),
+                        tooltip: 'Скорость', initialValue: _speed, color: const SageTheme.elevated,
                         onSelected: _speedTo,
                         itemBuilder: (_) => <double>[0.5, 0.75, 1, 1.25, 1.5, 2]
                           .map((x) => PopupMenuItem<double>(value: x, child: Text('$x x'))).toList(),
                         child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text('${_speed}x',
-                            style: const TextStyle(color: Color(0xFFBDEFFF), fontWeight: FontWeight.bold))),
+                            style: const TextStyle(color: SageTheme.ice, fontWeight: FontWeight.bold))),
                       ),
                       const SizedBox(width: 8),
                       _cinemaButton(onTap: _fullscreenToggle),
@@ -378,7 +379,7 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
 
   Widget _cinemaButton({bool compact = false, VoidCallback? onTap}) {
     return Material(
-      color: const Color(0xFF70D8E8).withValues(alpha: .14),
+      color: const SageTheme.cyan.withValues(alpha: .14),
       borderRadius: BorderRadius.circular(compact ? 13 : 30),
       child: InkWell(
         borderRadius: BorderRadius.circular(compact ? 13 : 30),
@@ -388,15 +389,15 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
           padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 13, vertical: compact ? 9 : 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(compact ? 13 : 30),
-            border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .7)),
-            boxShadow: const [BoxShadow(color: Color(0x4400E676), blurRadius: 12)]),
+            border: Border.all(color: const SageTheme.cyan.withValues(alpha: .7)),
+            boxShadow: const [BoxShadow(color: SageTheme.glowSoft, blurRadius: 12)]),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             Icon(_fullscreen ? Icons.fullscreen_exit_rounded : Icons.fullscreen_rounded,
-              color: const Color(0xFFBDEFFF), size: compact ? 22 : 20),
+              color: const SageTheme.ice, size: compact ? 22 : 20),
             if (!compact) ...[
               const SizedBox(width: 7),
               Text(_fullscreen ? 'Свернуть' : 'На весь экран',
-                style: const TextStyle(color: Color(0xFFBDEFFF), fontSize: 10, fontWeight: FontWeight.w800)),
+                style: const TextStyle(color: SageTheme.ice, fontSize: 10, fontWeight: FontWeight.w800)),
             ],
           ]),
         ),
@@ -423,21 +424,21 @@ class _SageVideoPlayerPageState extends State<SageVideoPlayerPage> with SingleTi
     width: large ? 76 : 62, height: large ? 76 : 62,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: const Color(0xFF70D8E8).withValues(alpha: .18),
-      border: Border.all(color: const Color(0xFFBDEFFF), width: 1.5),
-      boxShadow: const [BoxShadow(color: Color(0x9900E676), blurRadius: 24, spreadRadius: 2)]),
+      color: const SageTheme.cyan.withValues(alpha: .18),
+      border: Border.all(color: const SageTheme.ice, width: 1.5),
+      boxShadow: const [BoxShadow(color: SageTheme.glowStrong, blurRadius: 24, spreadRadius: 2)]),
     child: IconButton(
       onPressed: _playPause,
       iconSize: large ? 44 : 38,
-      color: const Color(0xFFBDEFFF),
+      color: const SageTheme.ice,
       icon: Icon(playing ? Icons.pause_rounded : Icons.play_arrow_rounded),
     ));
 
   Widget _badge() => Container(
     padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
-    decoration: BoxDecoration(color: const Color(0xFF173746), borderRadius: BorderRadius.circular(30),
-      border: Border.all(color: const Color(0xFF70D8E8).withValues(alpha: .6))),
-    child: Text('SAGE // $_code', style: const TextStyle(color: Color(0xFFBDEFFF),
+    decoration: BoxDecoration(color: const SageTheme.elevated, borderRadius: BorderRadius.circular(30),
+      border: Border.all(color: const SageTheme.cyan.withValues(alpha: .6))),
+    child: Text('SAGE // $_code', style: const TextStyle(color: SageTheme.ice,
       fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.2)));
 
 }
@@ -452,7 +453,7 @@ class _ToxicGlow extends CustomPainter {
       final phase = t * math.pi * 2 + i * 1.7;
       final x = size.width * (.5 + math.sin(phase) * .43);
       final y = size.height * (.5 + math.cos(phase * .8) * .4);
-      paint.color = const Color(0xFF79FF4D).withValues(alpha: .13);
+      paint.color = const SageTheme.cyan.withValues(alpha: .13);
       canvas.drawCircle(Offset(x, y), 2 + (math.sin(phase * 1.4) + 1) * 2.5, paint);
     }
   }
@@ -466,7 +467,7 @@ class _VideoMissingMessage extends StatelessWidget {
   final String code;
   @override
   Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, children: [
-    const Icon(Icons.movie_outlined, size: 56, color: Color(0xFF70D8E8)),
+    const Icon(Icons.movie_outlined, size: 56, color: SageTheme.cyan),
     const SizedBox(height: 16),
     const Text('Локальное видео пока не добавлено', textAlign: TextAlign.center,
       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
@@ -474,6 +475,6 @@ class _VideoMissingMessage extends StatelessWidget {
     const Text('Помести MP4-файл по указанному пути и перезапусти приложение.', textAlign: TextAlign.center),
     const SizedBox(height: 12),
     SelectableText(assetPath, textAlign: TextAlign.center,
-      style: const TextStyle(color: Color(0xFF70D8E8))),
+      style: const TextStyle(color: SageTheme.cyan)),
   ]);
 }
