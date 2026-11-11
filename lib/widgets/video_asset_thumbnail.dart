@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,7 +49,7 @@ class VideoAssetThumbnail extends StatelessWidget {
         await sourceFile.writeAsBytes(bytes, flush: true);
       }
 
-      return VideoThumbnail.thumbnailData(
+      return await VideoThumbnail.thumbnailData(
         video: sourceFile.path,
         imageFormat: ImageFormat.JPEG,
         maxWidth: 960,
