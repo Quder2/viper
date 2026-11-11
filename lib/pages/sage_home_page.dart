@@ -144,9 +144,9 @@ class _SageHomePageState extends State<SageHomePage> {
                   _InfoChip(icon: Icons.public_rounded, label: 'КИТАЙ'),
                 ]),
                 const SizedBox(height: 30),
-                const _SectionTitle(kicker: 'OFFICIAL RIOT FOOTAGE', title: 'АРСЕНАЛ // ВИДЕО'),
+                const _SectionTitle(kicker: 'LOCAL RIOT FOOTAGE', title: 'АРСЕНАЛ // ВИДЕО'),
                 const SizedBox(height: 7),
-                const Text('Официальные видеоролики способностей с CDN Riot Games. Нажми на карточку, чтобы открыть плеер.',
+                const Text('Локальные видеозаписи способностей. Добавь MP4 в assets/sage/videos — они будут доступны даже без интернета.',
                   style: TextStyle(color: SageTheme.muted, fontSize: 11, height: 1.5)),
                 const SizedBox(height: 14),
                 SizedBox(
