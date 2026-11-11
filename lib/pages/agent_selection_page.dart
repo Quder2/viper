@@ -78,7 +78,7 @@ class AgentSelectionPage extends StatelessWidget {
                         description: 'Токсичные зоны. Контроль пространства. Без права на ошибку.',
                         accent: const Color(0xFF9BFF83),
                         background: const Color(0xFF10251A),
-                        image: 'assets/images/1.png',
+                        image: 'assets/viper/images/1.png',
                         localImage: true,
                         code: 'V-01',
                         onTap: () => Navigator.of(context).pushReplacement(
