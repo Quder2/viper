@@ -79,6 +79,10 @@ flutter:
     - assets/images/2.png
     - assets/images/3.png
     - assets/images/4.png
+    - assets/sage/images/
+    - assets/sage/abilities/
+    - assets/sage/videos/
+    - assets/sage/voice/
     - assets/icon/
     - assets/abilities/C.png
     - assets/abilities/E.png
