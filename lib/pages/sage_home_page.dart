@@ -299,7 +299,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                     ),
                     radius: 1.15,
                     colors: [
-                      const SageTheme.cyan.withValues(
+                      SageTheme.cyan.withValues(
                         alpha: .035 + _heroMotion.value * .035,
                       ),
                       Colors.transparent,
@@ -361,7 +361,7 @@ class _SageHomePageState extends State<SageHomePage> with TickerProviderStateMix
                   Row(
                     children: [
                       Material(
-                        color: const SageTheme.overlayButton,
+                        color: SageTheme.overlayButton,
                         shape: const CircleBorder(
                           side: BorderSide(color: SageTheme.outlineSoft),
                         ),
@@ -453,14 +453,14 @@ class _TiltHint extends StatelessWidget {
       duration: const Duration(milliseconds: 220),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const SageTheme.overlayHint,
+        color: SageTheme.overlayHint,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: const SageTheme.cyan.withValues(alpha: active ? .7 : .28),
+          color: SageTheme.cyan.withValues(alpha: active ? .7 : .28),
         ),
         boxShadow: [
           BoxShadow(
-            color: const SageTheme.cyan.withValues(alpha: active ? .16 : .04),
+            color: SageTheme.cyan.withValues(alpha: active ? .16 : .04),
             blurRadius: active ? 18 : 8,
           ),
         ],
@@ -514,7 +514,7 @@ class _SectionHeading extends StatelessWidget {
             width: 3,
             height: 34,
             decoration: BoxDecoration(
-              color: const SageTheme.cyan,
+              color: SageTheme.cyan,
               borderRadius: BorderRadius.circular(8),
               boxShadow: const [
                 BoxShadow(color: SageTheme.glowMedium, blurRadius: 12),
@@ -559,14 +559,14 @@ class _DataChip extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
         decoration: BoxDecoration(
-          color: const SageTheme.surface,
+          color: SageTheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const SageTheme.cyan.withValues(alpha: .2)),
+          border: Border.all(color: SageTheme.cyan.withValues(alpha: .2)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: const SageTheme.cyan),
+            Icon(icon, size: 14, color: SageTheme.cyan),
             const SizedBox(width: 7),
             Text(
               label,
@@ -589,9 +589,9 @@ class _StatusPill extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: const SageTheme.elevated,
+          color: SageTheme.elevated,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: const SageTheme.cyan.withValues(alpha: .55)),
+          border: Border.all(color: SageTheme.cyan.withValues(alpha: .55)),
         ),
         child: const Row(
           children: [
@@ -626,9 +626,9 @@ class _AbilityPanel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const SageTheme.panelGlass,
+          color: SageTheme.panelGlass,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const SageTheme.cyan.withValues(alpha: .17)),
+          border: Border.all(color: SageTheme.cyan.withValues(alpha: .17)),
           boxShadow: const [
             BoxShadow(color: SageTheme.glowSubtle, blurRadius: 18, spreadRadius: 1),
           ],
@@ -643,9 +643,9 @@ class _AbilityPanel extends StatelessWidget {
                   height: 48,
                   padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
-                    color: const SageTheme.elevated,
+                    color: SageTheme.elevated,
                     borderRadius: BorderRadius.circular(13),
-                    border: Border.all(color: const SageTheme.cyan.withValues(alpha: .25)),
+                    border: Border.all(color: SageTheme.cyan.withValues(alpha: .25)),
                   ),
                   child: Image.asset(ability.image, fit: BoxFit.contain),
                 ),
@@ -700,9 +700,9 @@ class _AbilityPanel extends StatelessWidget {
                 icon: const Icon(Icons.play_arrow_rounded, size: 19),
                 label: const Text('ОТКРЫТЬ ЗАПИСЬ'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const SageTheme.ice,
-                  side: BorderSide(color: const SageTheme.cyan.withValues(alpha: .45)),
-                  backgroundColor: const SageTheme.cyan.withValues(alpha: .07),
+                  foregroundColor: SageTheme.ice,
+                  side: BorderSide(color: SageTheme.cyan.withValues(alpha: .45)),
+                  backgroundColor: SageTheme.cyan.withValues(alpha: .07),
                   textStyle: const TextStyle(
                     fontSize: 9,
                     letterSpacing: 1.2,
@@ -736,7 +736,7 @@ class _VideoArchiveCard extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
         width: 238,
         child: Material(
-          color: const SageTheme.deepSurface,
+          color: SageTheme.deepSurface,
           borderRadius: BorderRadius.circular(17),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
@@ -764,9 +764,9 @@ class _VideoArchiveCard extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const SageTheme.surface.withValues(alpha: .85),
+                      color: SageTheme.surface.withValues(alpha: .85),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const SageTheme.cyan.withValues(alpha: .55)),
+                      border: Border.all(color: SageTheme.cyan.withValues(alpha: .55)),
                     ),
                     child: Text(
                       '${SageProfileConfig.profile.name} // ${ability.code}',
@@ -826,7 +826,7 @@ class _StoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        color: const SageTheme.elevated,
+        color: SageTheme.elevated,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
@@ -835,7 +835,7 @@ class _StoryButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const SageTheme.cyan.withValues(alpha: .48)),
+              border: Border.all(color: SageTheme.cyan.withValues(alpha: .48)),
               boxShadow: const [
                 BoxShadow(color: Color(0x3339B9D3), blurRadius: 18),
               ],
